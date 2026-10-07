@@ -2,12 +2,10 @@ import { createHash, createPrivateKey, createPublicKey, generateKeyPairSync, ran
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-export const APPROVED_QUESTION = 'Does this filing report at least 20 rent-regulated residential units?';
-export const APPROVED_THRESHOLD = 20;
-export const PREDICATE_ID = 'Q001';
-export const SCHEMA_VERSION = 'rpie-demo-v1';
-export const COMMITMENT_ENCODING = 'housingproof-canonical-json-sha256-v1';
-export const EXPENSE_KEYS = ['fuel', 'light_and_power', 'cleaning_contracts', 'wages_and_payroll', 'repairs_and_maintenance', 'management_and_administration', 'insurance', 'water_and_sewer', 'advertising', 'interior_painting_and_decorating', 'amortized_leasing_costs', 'amortized_tenant_improvement_costs', 'miscellaneous'] as const;
+import { APPROVED_QUESTION, APPROVED_THRESHOLD, SCHEMA_VERSION, COMMITMENT_ENCODING, EXPENSE_KEYS } from './policy.js';
+import { computeSaltedCommitment } from './commitment.js';
+export { APPROVED_QUESTION, APPROVED_THRESHOLD, PREDICATE_ID, SCHEMA_VERSION, COMMITMENT_ENCODING, EXPENSE_KEYS } from './policy.js';
+export { computeSaltedCommitment } from './commitment.js';
 export type Filing = {
   schema_version: typeof SCHEMA_VERSION;
   synthetic: true;
@@ -26,8 +24,7 @@ export type Manifest = {
   commitment: string; rawDigest: string; issuedOn: string; signature: string;
 };
 export type ValidationResult = { valid: boolean; errors: string[] };
-export const syntheticFilings: unknown[] = JSON.parse(readFileSync(join(process.cwd(), 'data', 'filings.json'), 'utf8'));
-const filingSchema = JSON.parse(readFileSync(join(process.cwd(), 'data', 'schema.json'), 'utf8'));
+let filingSchema: Schema | undefined;
 type Schema = { type?: string; const?: unknown; enum?: unknown[]; minimum?: number; maximum?: number; pattern?: string; format?: string; required?: string[]; properties?: Record<string, Schema>; additionalProperties?: boolean };
 
 export function canonicalizeFiling(value: unknown): string {
@@ -57,7 +54,8 @@ function checkSchema(value: unknown, schema: Schema, path: string, errors: strin
 
 export function validateFiling(value: unknown): ValidationResult {
   const errors: string[] = [];
-  checkSchema(value, filingSchema, '$', errors);
+  filingSchema ??= JSON.parse(readFileSync(new URL('../data/schema.json', import.meta.url), 'utf8'));
+  checkSchema(value, filingSchema!, '$', errors);
   if (!errors.length) {
     const filing = value as Filing;
     const { year, start, end } = filing.reporting_period;
@@ -73,10 +71,6 @@ export function isApprovedQuestion(question: unknown): boolean {
 }
 
 export function createSalt(): string { return randomBytes(32).toString('hex'); }
-export function computeSaltedCommitment(filing: Filing, salt: string): string {
-  if (!/^[a-f0-9]{64}$/.test(salt)) throw new Error('Commitment requires a private 32-byte salt');
-  return createHash('sha256').update(`${COMMITMENT_ENCODING}\n`).update(canonicalizeFiling(filing)).update(Buffer.from(salt, 'hex')).digest('hex');
-}
 export function getKeyDirectory(): string {
   const dir = join(process.cwd(), 'server', 'keys'); mkdirSync(dir, { recursive: true, mode: 0o700 }); return dir;
 }
@@ -103,6 +97,12 @@ export function generateManifest(filing: Filing, salt: string, privateKeyPem: st
 }
 export function verifyManifestSignature(manifest: Manifest, publicKeyPem: string): boolean {
   try {
+    const keys = ['issuer', 'sourceId', 'propertyId', 'reportingPeriod', 'schemaVersion', 'sourceRevision', 'commitmentEncoding', 'commitment', 'rawDigest', 'issuedOn', 'signature'];
+    if (!manifest || Object.keys(manifest).sort().join(',') !== keys.sort().join(',')
+      || typeof manifest.sourceId !== 'string' || !/^DEMO-RPIE-[A-Z0-9-]+$/.test(manifest.sourceId)
+      || typeof manifest.propertyId !== 'string' || !/^DEMO-RPIE-[A-Z0-9-]+$/.test(manifest.propertyId)
+      || !['2024', '2025'].includes(manifest.reportingPeriod) || !Number.isInteger(manifest.sourceRevision) || manifest.sourceRevision < 1 || manifest.sourceRevision > 1000000
+      || typeof manifest.issuedOn !== 'string' || !Number.isFinite(Date.parse(manifest.issuedOn)) || typeof manifest.signature !== 'string') return false;
     if (manifest.issuer !== 'NYC-DOF-simulated' || manifest.schemaVersion !== SCHEMA_VERSION || manifest.commitmentEncoding !== COMMITMENT_ENCODING
       || !/^[a-f0-9]{64}$/.test(manifest.commitment) || !/^[a-f0-9]{64}$/.test(manifest.rawDigest) || 'salt' in manifest) return false;
     const { signature, ...payload } = manifest;

@@ -1,0 +1,27 @@
+name: Proof MVP
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  proof-mvp:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run zk:build
+      - run: npm run test:zk
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:browser
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: proof-mvp-evidence
+          path: |
+            proof-artifacts/benchmark.json
+            proof-artifacts/demo-desktop.png
+            proof-artifacts/demo-mobile.png

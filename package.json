@@ -1,28 +1,35 @@
 {
   "name": "housingproof",
-  "version": "0.1.0-alpha.1",
+  "version": "0.2.0-alpha.1",
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "tsx server/custodian.ts",
-    "dev": "tsx server/custodian.ts",
+    "start": "node --import tsx server/custodian.ts",
+    "dev": "node --import tsx server/custodian.ts",
     "test": "vitest run",
-    "verify": "tsx scripts/verify-bundle.ts",
-    "demo": "tsx scripts/demo.ts",
+    "verify": "node --import tsx scripts/verify-bundle.ts",
+    "demo": "node --import tsx scripts/demo.ts",
     "typecheck": "tsc --noEmit",
     "fixtures": "python3 scripts/validate-rpie-fixtures.py",
     "check": "npm run typecheck && npm run fixtures",
-    "build:site": "node scripts/build-site.mjs"
+    "build:site": "node scripts/build-site.mjs",
+    "zk:build": "node --import tsx scripts/build-zk.ts",
+    "test:zk": "node --import tsx scripts/test-zk.ts",
+    "test:browser": "node --import tsx scripts/test-browser.ts"
   },
   "dependencies": {
+    "@aztec/bb.js": "0.82.2",
+    "@noir-lang/noir_js": "1.0.0-beta.3",
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "express-rate-limit": "^8.7.1"
   },
   "devDependencies": {
+    "@noir-lang/noir_wasm": "1.0.0-beta.3",
     "@types/cors": "^2.8.5",
     "@types/express": "^5.0.0",
     "@types/node": "^22.10.2",
+    "playwright": "1.51.1",
     "tsx": "^4.19.0",
     "typescript": "^5.6.3",
     "vitest": "^3.2.7"

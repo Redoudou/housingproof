@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Housingproof explores verifiable answers from confidential NYC housing filings. Synthetic RPIE prototype; real ZK proofs are the next milestone.">
+  <meta name="description" content="Housingproof explores verifiable answers from confidential NYC housing filings. Synthetic RPIE MVP with real proofs and independent verification in the local application.">
   <meta name="theme-color" content="#0c1b2a">
   <title>Housingproof — Keep the data private. Unlock the answers.</title>
   <style>
@@ -21,8 +21,8 @@
     <article class="card"><span class="number">03 / VERIFY</span><h3>Verify the answer.</h3><p>The target experience returns an answer and a proof that can be checked independently.</p></article>
   </section>
   <section class="question"><p class="eyebrow">First approved question</p><blockquote>“Does this filing report at least 20 rent-regulated residential units?”</blockquote></section>
-  <section class="status" aria-labelledby="status"><span class="version">0.1.0-alpha.1 / synthetic prototype</span><h2 id="status">The foundation is here. Real proofs come next.</h2><p>The repository includes a source-mapped dataset, validation, signed simulator receipts, a local interface, tests, and a build plan. Genuine ZK proof generation and independent verification are not implemented yet. The local app withholds unverified answers.</p><p class="note">This page presents the project. It does not run a custodian service or prove statements. All records and issuance are simulated.</p></section>
-  <div class="links"><a class="button" href="https://github.com/Redoudou/housingproof#quick-start">Run locally</a><a class="button secondary" href="https://github.com/Redoudou/housingproof/blob/main/docs/mvp-plan.md">Read the build plan</a><a class="button secondary" href="https://github.com/Redoudou/housingproof/blob/main/docs/releases/v0.1.0-alpha.1.md">Read release notes</a></div>
+  <section class="status" aria-labelledby="status"><span class="version">0.2.0-alpha.1 / synthetic prototype</span><h2 id="status">Synthetic filings. Real proofs.</h2><p>The local application proves the 20-unit threshold and year-over-year operating-balance question with UltraPlonk. Export a public answer bundle, verify it without the filing, and test rejection of a changed answer. Both YES and NO are demonstrated; incomplete or unavailable sources release no answer.</p><p class="note">This page presents the project. It does not run a custodian service or prove statements. All records and issuance are simulated.</p></section>
+  <div class="links"><a class="button" href="https://github.com/Redoudou/housingproof#quick-start">Run locally</a><a class="button secondary" href="https://github.com/Redoudou/housingproof/blob/main/docs/mvp-plan.md">Read the build plan</a><a class="button secondary" href="https://github.com/Redoudou/housingproof/blob/main/docs/releases/v0.2.0-alpha.1.md">Read release notes</a></div>
   <p class="muted note">A future proof would verify a calculation against reported data, not establish that an owner’s report is accurate. Real use and disclosures would require City authorization and review.</p>
 </main>
 <footer>Independent prototype. No NYC or DOF endorsement is implied. <a href="https://github.com/Redoudou/housingproof/blob/main/LICENSE">Apache 2.0</a>.</footer>

@@ -1,5 +1,5 @@
 [package]
-name = "threshold_question"
+name = "balance_decline"
 type = "bin"
 authors = ["Housingproof"]
 compiler_version = "=1.0.0-beta.3"

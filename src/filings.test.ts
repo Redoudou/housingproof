@@ -1,7 +1,8 @@
+import { syntheticFilings } from './dataset.js';
 import { generateKeyPairSync } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { APPROVED_QUESTION, computeSaltedCommitment, createSalt, evaluateThreshold, generateManifest, syntheticFilings, validateFiling, verifyManifestSignature, type Filing } from './filings.js';
+import { APPROVED_QUESTION, computeSaltedCommitment, createSalt, evaluateThreshold, generateManifest, validateFiling, verifyManifestSignature, type Filing } from './filings.js';
 
 const filing = (id: string): Filing => structuredClone(syntheticFilings.find((v) => (v as Filing).source_id === id)) as Filing;
 export function testKeys() {

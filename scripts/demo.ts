@@ -1,4 +1,5 @@
-import { APPROVED_QUESTION, evaluateThreshold, syntheticFilings } from '../src/filings.js';
+import { syntheticFilings } from '../src/dataset.js';
+import { APPROVED_QUESTION, evaluateThreshold } from '../src/filings.js';
 
 // A private, local fixture oracle. No files or proof bundles are exported.
 console.log(JSON.stringify({ cryptographyTested: false, results: syntheticFilings.map((value) => ({
