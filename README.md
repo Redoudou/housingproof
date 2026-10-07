@@ -60,6 +60,10 @@ Open **http://localhost:3000**.
 
 Both panels share one local simulation. They illustrate roles, not production authentication or network isolation.
 
+## See the proposed experience
+
+[Try the interactive walkthrough](https://helloredwan.me/housingproof/walkthrough.html): load a fictional sample pack, watch an illustrative preparation sequence, and explore YES, NO, and unavailable scenarios. This is a scripted explanation for decision makers, not a working importer or proof demo.
+
 ## A proposed Department of Finance pilot
 
 DOF could audit and run this Apache-2.0 code in its own environment, then evaluate a controlled sample of about 100 filings. Start with synthetic records; use authorized real samples only inside the DOF environment after the required review. The current app has no bulk importer and does not yet generate genuine proofs.
