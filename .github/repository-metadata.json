@@ -1,6 +1,6 @@
 {
   "description": "Private housing data. Verifiable answers. A synthetic RPIE prototype exploring zero-knowledge proofs for New York City.",
-  "homepage": "https://redoudou.github.io/housingproof/",
+  "homepage": "https://helloredwan.me/housingproof/",
   "topics": ["housing", "nyc", "rpie", "zero-knowledge", "privacy", "civic-tech", "prototype"],
-  "notes": "Set the homepage after the project-site workflow confirms this URL. The site is an overview, not a hosted prover. These fields are a configuration record; this file alone does not edit GitHub About settings."
+  "notes": "Homepage confirmed via an HTTPS 200 response on October 7, 2026. The site is an overview, not a hosted prover. These fields are a configuration record; this file alone does not edit GitHub About settings."
 }

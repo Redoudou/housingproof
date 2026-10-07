@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Walk through a fictional Housingproof experience: prepare sample filings, ask an approved question, and understand what an agency would receive.">
+<title>See how it would work · Housingproof</title>
+<link rel="stylesheet" href="walkthrough.css"><script src="walkthrough.js" defer></script>
+</head>
+<body>
+<header><a class="brand" href="./">Housingproof<span>Private records. Useful answers.</span></a><a href="./">Project overview ↗</a></header>
+<main>
+<div class="intro"><span class="eyebrow">AN INTERACTIVE WALKTHROUGH</span><h1>A useful answer.<br>Without handing over the filing.</h1><p>Follow a fictional RPIE filing from DOF’s desk to an agency’s decision. See what stays private—and what can be shared.</p></div>
+<div class="demo-note"><strong>Illustrative demo</strong><span>Fictional samples and scripted results. No real upload, calculation, or cryptographic proof.</span></div>
+<ol class="steps" aria-label="Walkthrough progress"><li aria-current="step"><span>1</span> Add samples</li><li><span>2</span> Prepare privately</li><li><span>3</span> Ask & understand</li></ol>
+<section id="load" class="stage">
+<div class="stage-heading"><div><span class="eyebrow">01 / THE DOF VIEW</span><h2>Start with a few filings.</h2></div><span class="role">Records stay with DOF</span></div>
+<p>In the proposed product, DOF would select authorized files in its own environment. Here, use a fictional sample pack to explore the experience.</p>
+<div class="dropzone"><div class="file-icon" aria-hidden="true">▤</div><h3>A small sample. A clear starting point.</h3><p>100 fictional RPIE filings · reporting year 2025</p><button id="load-button">Load fictional sample pack <span aria-hidden="true">→</span></button><small>No files are requested from your computer.</small></div>
+<div class="why"><strong>Why this matters</strong><p>The source records would remain under DOF’s control. Another agency would ask a specific question instead of receiving a copy of the financial report.</p></div>
+</section>
+<section id="prepare" class="stage" hidden>
+<div class="stage-heading"><div><span class="eyebrow">02 / INSIDE THE DOF ENVIRONMENT</span><h2 id="prepare-title">Preparing the sample workspace.</h2></div><span class="role">Illustrative animation</span></div>
+<p>The animation shows the proposed preparation steps. Private details would be used inside DOF to support approved answers.</p>
+<div class="processing"><div class="orbit" aria-hidden="true"><span>▤</span><b>⌁</b><span>▤</span></div><p id="process-label" role="status" aria-live="polite">Reading the fictional sample pack…</p><progress id="progress" max="100" value="0" aria-label="Illustrative preparation progress"></progress><ol class="tasks"><li>Check the required information</li><li>Organize filings by property and year</li><li>Prepare a source reference for approved questions</li></ol></div>
+<div id="ready" hidden><div class="ready-summary"><strong>100 fictional filings ready to explore</strong><span>Private source details stay in the custodian view.</span></div><div class="sample-list"><span>DEMO-001 <small>2025 RPIE</small></span><span>DEMO-002 <small>2025 RPIE</small></span><span>DEMO-003 <small>2025 RPIE</small></span><span class="muted">+ 97 fictional samples</span></div><button id="continue-button">Continue to the agency view →</button></div>
+</section>
+<section id="ask" class="stage" hidden>
+<div class="stage-heading"><div><span class="eyebrow">03 / THE REQUESTING AGENCY VIEW</span><h2>Ask for an answer, not the records.</h2></div><span class="role">Source details withheld</span></div>
+<p>An authorized agency would choose a property and an approved question. It would not browse the underlying filing.</p>
+<div class="question-layout"><div class="question-form"><label for="sample">Choose a fictional filing</label><select id="sample"><option value="yes">DEMO-001 · 2025</option><option value="no">DEMO-002 · 2025</option><option value="unavailable">DEMO-003 · 2025 · incomplete scenario</option></select><label for="question">Approved question</label><div id="question" class="fixed-question">Does this filing report at least <strong>20 rent-regulated residential units?</strong></div><p class="muted small">A fixed question limits what is disclosed. Additional questions would need their own approval and implementation.</p><button id="ask-button">Show illustrative answer →</button></div><aside class="private-box"><span aria-hidden="true">▧</span><h3>The filing stays behind.</h3><p>The agency would not receive the exact unit count, income lines, expense details, or original filing.</p><p>It would receive the approved answer and the evidence needed to check it.</p></aside></div>
+<div id="answer" class="answer" hidden aria-live="polite" aria-atomic="true"></div>
+<div class="why"><strong>What could this support?</strong><p>An agency could use a narrow fact to inform an initial review or request for follow-up. The answer would describe what was reported; it would not establish legal status, confirm the owner’s accuracy, or decide eligibility by itself.</p></div>
+</section>
+<section class="takeaway"><span class="eyebrow">THE IDEA TO TAKE AWAY</span><h2>Share the fact needed for a decision.<br>Keep the rest of the filing protected.</h2><div class="takeaway-grid"><div><strong>DOF retains</strong><p>The source filing and private details used to answer the question.</p></div><div><strong>The agency receives</strong><p>An approved answer, permitted source context, and—in the target product—a checkable proof.</p></div><div><strong>The proof establishes</strong><p>That the answer follows from the committed reported values. It does not establish that the report is true.</p></div></div></section>
+<div class="bottom-links"><button id="restart" class="secondary">Restart walkthrough</button><a href="https://github.com/Redoudou/housingproof/blob/main/docs/dof-pilot.md">Explore the proposed DOF pilot ↗</a></div>
+<p class="footnote">This walkthrough illustrates a future experience. It does not implement import, preparation, permission checks, or proof verification. Approved answers disclose information too; real use would require authorization and disclosure controls.</p>
+<noscript><p>This interactive walkthrough needs JavaScript. The proposed flow is: DOF loads filings → prepares them privately → an authorized agency asks a fixed question → receives an answer and a checkable proof.</p></noscript>
+</main><footer>Housingproof · Independent open-source prototype. No NYC or DOF endorsement is implied.</footer>
+</body></html>

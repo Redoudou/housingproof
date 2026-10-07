@@ -7,7 +7,7 @@ The repository has two distinct experiences:
 
 ## GitHub Pages
 
-Expected project URL: https://redoudou.github.io/housingproof/
+Project URL: https://helloredwan.me/housingproof/
 
 `.github/workflows/pages.yml` builds and publishes only `dist/site`. It never publishes the repository, dataset, private keys, witnesses, or server. Its successful deployment output is the authoritative public URL; use that to populate the repository homepage.
 

@@ -6,7 +6,7 @@
 ![Stage: Synthetic prototype](https://img.shields.io/badge/stage-synthetic%20prototype-315c63)
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-0c1b2a)](LICENSE)
 
-**[Project site](https://redoudou.github.io/housingproof/) · [Quick start](#quick-start) · [MVP plan](docs/mvp-plan.md) · [Release notes](docs/releases/v0.2.0-alpha.1.md) · [Releases](https://github.com/Redoudou/housingproof/releases)**
+**[Project site](https://helloredwan.me/housingproof/) · [Quick start](#quick-start) · [DOF pilot workflow](docs/dof-pilot.md) · [MVP plan](docs/mvp-plan.md) · [Release notes](docs/releases/v0.2.0-alpha.1.md) · [Releases](https://github.com/Redoudou/housingproof/releases)**
 
 </div>
 
@@ -37,7 +37,7 @@ The potential outcome: better evidence for housing decisions, with controlled di
 
 **Synthetic inputs. Real zero-knowledge proofs.** The local app generates fresh UltraPlonk proofs, verifies the signed source and approved statement, and then releases YES or NO. Export the public bundle and verify it without the source records or issuer private key. A signed receipt alone is never accepted as a verified answer.
 
-The linked project site presents the concept and current status. It is **not a hosted prover**. Its deployment is managed by the [Pages workflow](.github/workflows/pages.yml); the URL becomes available after its first successful deployment.
+The linked project site presents the concept and current status. It is **not a hosted prover**. Its deployment is managed by the [Pages workflow](.github/workflows/pages.yml); the project overview is deployed at [helloredwan.me/housingproof](https://helloredwan.me/housingproof/).
 
 ## Quick start
 
@@ -64,6 +64,18 @@ Open **http://localhost:3000**.
 The first build downloads the backend's public CRS and checks compiled circuit and verification-key fingerprints. It requires internet access. Proof operations use isolated, single-threaded workers with a three-minute timeout. See [proof protocol](docs/proof-protocol.md) and [validation evidence](docs/mvp-validation.md).
 
 Both panels share one local simulation. They illustrate roles, not production authentication or network isolation.
+
+## See the proposed experience
+
+[Try the interactive walkthrough](https://helloredwan.me/housingproof/walkthrough.html): load a fictional sample pack, watch an illustrative preparation sequence, and explore YES, NO, and unavailable scenarios. This is a scripted explanation for decision makers, not a working importer or proof demo.
+
+## A proposed Department of Finance pilot
+
+DOF could audit and run this Apache-2.0 code in its own environment, then evaluate a controlled sample of about 100 filings. Start with synthetic records; use authorized real samples only inside the DOF environment after the required review. The current app has no bulk importer and does not yet generate genuine proofs.
+
+The proposed flow is **import → validate → register → ask an approved question → generate a proof inside DOF → verify outside the source environment**. DOF retains source access. The authorized recipient receives only the approved answer, permitted public metadata, and proof—not the filing or hidden input values. The answer itself discloses information; proofs do not authorize disclosure or establish that the owner's report is true.
+
+[Read the pilot walkthrough, access boundaries, and acceptance checklist](docs/dof-pilot.md).
 
 ## One building. Two years. Clear boundaries.
 
