@@ -8,7 +8,10 @@
     "dev": "tsx server/custodian.ts",
     "test": "vitest run",
     "verify": "tsx scripts/verify-bundle.ts",
-    "demo": "tsx scripts/demo.ts"
+    "demo": "tsx scripts/demo.ts",
+    "typecheck": "tsc --noEmit",
+    "fixtures": "python3 scripts/validate-rpie-fixtures.py",
+    "check": "npm run typecheck && npm run fixtures"
   },
   "dependencies": {
     "cors": "^2.8.5",

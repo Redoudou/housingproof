@@ -7,3 +7,8 @@ proof-artifacts/
 issuer-private.pem
 issuer-public.pem
 *.log
+
+.bb-crs/
+server/keys/
+**/Prover.toml
+**/*.gz

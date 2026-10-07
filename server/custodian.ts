@@ -1,101 +1,60 @@
-import cors from 'cors';
 import express from 'express';
 import rateLimit from 'express-rate-limit';
-import { ensureIssuerKeys, evaluateThreshold, exportBundle, generateManifest, loadPrivateKeyPem, loadPublicKeyPem, syntheticFilings, verifyManifestSignature, createSalt, type Manifest, type Filing, APPROVED_QUESTION, APPROVED_THRESHOLD } from '../src/filings.js';
+import { pathToFileURL } from 'node:url';
+import { APPROVED_QUESTION, APPROVED_THRESHOLD, createSalt, ensureIssuerKeys, evaluateThreshold, generateManifest, syntheticFilings, validateFiling, type Filing, type Manifest } from '../src/filings.js';
 import { generateThresholdProof } from '../src/proof.js';
 
-const app = express();
-const PORT = Number(process.env.PORT ?? 3000);
-const registrations = new Map<string, { manifest: Manifest; salt: string }>();
-const apiLimiter = rateLimit({
-  windowMs: 60_000,
-  max: 30,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: { error: 'Too many requests. Please retry shortly.' },
-});
+export function createApp(options: { filings?: unknown[]; keys?: { privateKeyPem: string; publicKeyPem: string } } = {}) {
+  const app = express();
+  const filings = options.filings ?? syntheticFilings;
+  const keys = options.keys ?? ensureIssuerKeys();
+  const registrations = new Map<string, { manifest: Manifest; salt: string; filing: Filing }>();
+  const findFiling = (id: string): unknown => filings.find((value) => value && typeof value === 'object' && (value as Filing).source_id === id);
+  app.use(express.json({ limit: '32kb' }));
+  app.use('/api/', rateLimit({ windowMs: 60_000, limit: 30, standardHeaders: true, legacyHeaders: false }));
+  app.use(express.static('public'));
 
-ensureIssuerKeys();
-app.use(cors());
-app.use(express.json());
-app.use('/api/', apiLimiter);
-app.use(express.static('public'));
-
-app.get('/api/filings', (_req, res) => {
-  const list = syntheticFilings.map((filing) => ({
-    id: filing.id,
-    label: `${filing.id} (${filing.status})`,
-    status: filing.status,
-    propertyId: filing.propertyId,
-    reportingPeriod: filing.reportingPeriod,
-  }));
-  res.json(list);
-});
-
-app.post('/api/filings/register', (req, res) => {
-  const filingId = String(req.body?.filingId ?? '');
-  const filing = syntheticFilings.find((entry) => entry.id === filingId);
-
-  if (!filing) {
-    res.status(404).json({ error: 'Unknown filing id' });
-    return;
-  }
-
-  const salt = createSalt();
-  const manifest = generateManifest(filing, salt, loadPrivateKeyPem());
-  registrations.set(filing.id, { manifest, salt });
-
-  res.json({
-    filingId: filing.id,
-    propertyId: filing.propertyId,
-    commitment: manifest.commitment,
-    manifest,
-    verification: verifyManifestSignature(manifest, loadPublicKeyPem()) ? 'valid' : 'invalid',
+  // Both roles share a local simulation. This is not production authentication or isolation.
+  app.get('/api/filings', (_req, res) => {
+    res.json(filings.map((value) => {
+      const filing = value as Filing;
+      return { id: filing.source_id, label: filing.source_id, propertyId: filing.property.property_id,
+        reportingPeriod: String(filing.reporting_period.year), registered: registrations.has(filing.source_id) };
+    }));
   });
-});
-
-app.post('/api/filings/answer', async (req, res) => {
-  const filingId = String(req.body?.filingId ?? '');
-  const question = String(req.body?.question ?? '');
-  const filing = syntheticFilings.find((entry) => entry.id === filingId);
-
-  if (!filing) {
-    res.status(404).json({ error: 'Unknown filing id' });
-    return;
-  }
-
-  const outcome = evaluateThreshold(filing, question);
-  const registered = registrations.get(filing.id);
-  const manifest = registered?.manifest ?? generateManifest(filing, registered?.salt ?? createSalt(), loadPrivateKeyPem());
-
-  let bundle: Record<string, unknown> | null = null;
-  let verification = 'not_run';
-
-  if (outcome.status === 'valid_yes' || outcome.status === 'valid_no') {
-    const proofResult = await generateThresholdProof(filing, outcome.answer === true);
-    verification = proofResult.status === 'verified' ? 'valid' : 'failed_verification';
-    if (proofResult.status === 'verified') {
-      bundle = exportBundle(outcome, filing, manifest);
-      (bundle as any).proof = proofResult;
+  app.post('/api/filings/register', (req, res) => {
+    const id = req.body?.filingId;
+    if (typeof id !== 'string') { res.status(400).json({ status: 'missing_data', message: 'Choose a synthetic filing.' }); return; }
+    const candidate = findFiling(id);
+    if (!candidate) { res.status(404).json({ status: 'missing_data', message: 'Unknown source.' }); return; }
+    if (!validateFiling(candidate).valid) { res.status(422).json({ status: 'missing_data', message: 'Registration rejected: invalid or incomplete filing.' }); return; }
+    const filing = candidate as Filing;
+    let registration = registrations.get(id);
+    if (!registration) {
+      const salt = createSalt();
+      registration = { filing, salt, manifest: generateManifest(filing, salt, keys.privateKeyPem) };
+      registrations.set(id, registration);
     }
-  } else if (outcome.status === 'missing_data') {
-    verification = 'missing_data';
-  } else {
-    verification = 'denied';
-  }
-
-  res.json({
-    filingId: filing.id,
-    question: APPROVED_QUESTION,
-    threshold: APPROVED_THRESHOLD,
-    status: outcome.status,
-    answer: outcome.answer,
-    verification,
-    message: outcome.message,
-    bundle,
+    const manifest = registration.manifest;
+    res.json({ filingId: id, propertyId: manifest.propertyId, commitment: manifest.commitment, manifest, sourceStatus: 'registered_simulation' });
   });
-});
+  app.post('/api/filings/answer', async (req, res) => {
+    const id = req.body?.filingId;
+    const question = req.body?.question;
+    const threshold = req.body?.threshold ?? APPROVED_THRESHOLD;
+    const policy = evaluateThreshold(null, question, threshold);
+    if (policy.status === 'denied') { res.status(403).json({ status: 'denied', answer: null, verification: 'not_run', message: policy.message, bundle: null }); return; }
+    const registered = typeof id === 'string' ? registrations.get(id) : undefined;
+    if (!registered) { res.status(409).json({ status: 'not_registered', answer: null, verification: 'not_run', message: 'Register a valid synthetic filing in the DOF simulation first.', bundle: null }); return; }
+    const outcome = evaluateThreshold(registered.filing, question, threshold);
+    const proof = await generateThresholdProof(registered.filing, outcome.answer === true, registered.manifest, registered.salt);
+    res.status(503).json({ filingId: id, question: APPROVED_QUESTION, threshold: APPROVED_THRESHOLD,
+      status: proof.status, answer: null, verification: 'not_run', message: proof.message, bundle: null });
+  });
+  return app;
+}
 
-app.listen(PORT, () => {
-  console.log(`Housingproof custodian listening on http://localhost:${PORT}`);
-});
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  const port = Number(process.env.PORT ?? 3000);
+  createApp().listen(port, '127.0.0.1', () => console.log(`Housingproof local simulation: http://localhost:${port}`));
+}

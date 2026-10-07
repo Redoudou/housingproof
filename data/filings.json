@@ -1,157 +1,522 @@
 [
   {
-    "id": "synthetic-rpie-40-24",
-    "propertyId": "SIM-40-2025",
-    "propertyType": "residential",
-    "reportingPeriod": "2025",
-    "schemaVersion": "rpie-2025-residential-v1",
-    "sourceRevision": "synthetic-rpie-2025-v1",
-    "status": "valid",
-    "unitCounts": {
-      "totalDwellingUnits": 40,
-      "regulatedResidentialUnits": 24,
-      "marketRateUnits": 16,
-      "otherResidentialUnits": 0
+    "schema_version": "rpie-demo-v1",
+    "synthetic": true,
+    "source_id": "DEMO-RPIE-001-2024-BASE",
+    "source_revision": 1,
+    "property": {
+      "property_id": "DEMO-RPIE-001",
+      "residential_units": 40,
+      "commercial_units": 0,
+      "owner_occupied_units": 0
     },
-    "annualIncomeCategories": {
-      "grossPotentialRent": 64000000,
-      "vacancyAndCollectionLoss": 4800000,
-      "netEffectiveGrossIncome": 59200000,
-      "otherOperatingIncome": 500000,
-      "totalIncome": 59700000
+    "reporting_period": {
+      "year": 2024,
+      "basis": "calendar",
+      "start": "2024-01-01",
+      "end": "2024-12-31"
     },
-    "operatingExpenses": {
-      "repairsAndMaintenance": 8500000,
-      "utilities": 4100000,
-      "insurance": 2600000,
-      "taxesAndAssessments": 1100000,
-      "management": 3200000,
-      "otherOperatingExpenses": 700000,
-      "totalOperatingExpenses": 20100000
+    "scope": {
+      "projection": "residential-only-main-statement-v1",
+      "other_income_categories_present": false,
+      "replacement_reserve_activity_present": false,
+      "rent_roll_included": false
+    },
+    "income": {
+      "regulated_units_reported": 24,
+      "unregulated_units_reported": 16,
+      "regulated_rental_income_cents": 51840000,
+      "unregulated_rental_income_cents": 58080000,
+      "other_service_income_cents": 1080000
+    },
+    "operating_expenses_cents": {
+      "fuel": 6000000,
+      "light_and_power": 2000000,
+      "cleaning_contracts": 2500000,
+      "wages_and_payroll": 10000000,
+      "repairs_and_maintenance": 8000000,
+      "management_and_administration": 6000000,
+      "insurance": 6500000,
+      "water_and_sewer": 4500000,
+      "advertising": 500000,
+      "interior_painting_and_decorating": 2000000,
+      "amortized_leasing_costs": 1000000,
+      "amortized_tenant_improvement_costs": 1000000,
+      "miscellaneous": 1000000
+    },
+    "excluded_expenses_cents": {
+      "real_estate_taxes": 12000000,
+      "bad_debt": 0,
+      "depreciation": 5000000,
+      "mortgage_interest": 8000000
     }
   },
   {
-    "id": "synthetic-rpie-40-20",
-    "propertyId": "SIM-40-2025",
-    "propertyType": "residential",
-    "reportingPeriod": "2025",
-    "schemaVersion": "rpie-2025-residential-v1",
-    "sourceRevision": "synthetic-rpie-2025-v1",
-    "status": "valid",
-    "unitCounts": {
-      "totalDwellingUnits": 40,
-      "regulatedResidentialUnits": 20,
-      "marketRateUnits": 20,
-      "otherResidentialUnits": 0
+    "schema_version": "rpie-demo-v1",
+    "synthetic": true,
+    "source_id": "DEMO-RPIE-001-2025-BASE",
+    "source_revision": 1,
+    "property": {
+      "property_id": "DEMO-RPIE-001",
+      "residential_units": 40,
+      "commercial_units": 0,
+      "owner_occupied_units": 0
     },
-    "annualIncomeCategories": {
-      "grossPotentialRent": 61000000,
-      "vacancyAndCollectionLoss": 4500000,
-      "netEffectiveGrossIncome": 56500000,
-      "otherOperatingIncome": 450000,
-      "totalIncome": 56950000
+    "reporting_period": {
+      "year": 2025,
+      "basis": "calendar",
+      "start": "2025-01-01",
+      "end": "2025-12-31"
     },
-    "operatingExpenses": {
-      "repairsAndMaintenance": 8200000,
-      "utilities": 3900000,
-      "insurance": 2500000,
-      "taxesAndAssessments": 1000000,
-      "management": 3000000,
-      "otherOperatingExpenses": 650000,
-      "totalOperatingExpenses": 19350000
+    "scope": {
+      "projection": "residential-only-main-statement-v1",
+      "other_income_categories_present": false,
+      "replacement_reserve_activity_present": false,
+      "rent_roll_included": false
+    },
+    "income": {
+      "regulated_units_reported": 24,
+      "unregulated_units_reported": 16,
+      "regulated_rental_income_cents": 51840000,
+      "unregulated_rental_income_cents": 57080000,
+      "other_service_income_cents": 1080000
+    },
+    "operating_expenses_cents": {
+      "fuel": 6000000,
+      "light_and_power": 2000000,
+      "cleaning_contracts": 2500000,
+      "wages_and_payroll": 10000000,
+      "repairs_and_maintenance": 13000000,
+      "management_and_administration": 6000000,
+      "insurance": 6500000,
+      "water_and_sewer": 4500000,
+      "advertising": 500000,
+      "interior_painting_and_decorating": 2000000,
+      "amortized_leasing_costs": 1000000,
+      "amortized_tenant_improvement_costs": 1000000,
+      "miscellaneous": 1000000
+    },
+    "excluded_expenses_cents": {
+      "real_estate_taxes": 12000000,
+      "bad_debt": 0,
+      "depreciation": 5000000,
+      "mortgage_interest": 8000000
     }
   },
   {
-    "id": "synthetic-rpie-40-19",
-    "propertyId": "SIM-40-2025",
-    "propertyType": "residential",
-    "reportingPeriod": "2025",
-    "schemaVersion": "rpie-2025-residential-v1",
-    "sourceRevision": "synthetic-rpie-2025-v1",
-    "status": "valid",
-    "unitCounts": {
-      "totalDwellingUnits": 40,
-      "regulatedResidentialUnits": 19,
-      "marketRateUnits": 21,
-      "otherResidentialUnits": 0
+    "schema_version": "rpie-demo-v1",
+    "synthetic": true,
+    "source_id": "DEMO-RPIE-001-2025-STRESS",
+    "source_revision": 1,
+    "property": {
+      "property_id": "DEMO-RPIE-001",
+      "residential_units": 40,
+      "commercial_units": 0,
+      "owner_occupied_units": 0
     },
-    "annualIncomeCategories": {
-      "grossPotentialRent": 60000000,
-      "vacancyAndCollectionLoss": 4300000,
-      "netEffectiveGrossIncome": 55700000,
-      "otherOperatingIncome": 400000,
-      "totalIncome": 56100000
+    "reporting_period": {
+      "year": 2025,
+      "basis": "calendar",
+      "start": "2025-01-01",
+      "end": "2025-12-31"
     },
-    "operatingExpenses": {
-      "repairsAndMaintenance": 8000000,
-      "utilities": 3800000,
-      "insurance": 2350000,
-      "taxesAndAssessments": 950000,
-      "management": 2900000,
-      "otherOperatingExpenses": 600000,
-      "totalOperatingExpenses": 18800000
+    "scope": {
+      "projection": "residential-only-main-statement-v1",
+      "other_income_categories_present": false,
+      "replacement_reserve_activity_present": false,
+      "rent_roll_included": false
+    },
+    "income": {
+      "regulated_units_reported": 24,
+      "unregulated_units_reported": 16,
+      "regulated_rental_income_cents": 51840000,
+      "unregulated_rental_income_cents": 45080000,
+      "other_service_income_cents": 1080000
+    },
+    "operating_expenses_cents": {
+      "fuel": 6000000,
+      "light_and_power": 2000000,
+      "cleaning_contracts": 2500000,
+      "wages_and_payroll": 10000000,
+      "repairs_and_maintenance": 13000000,
+      "management_and_administration": 6000000,
+      "insurance": 6500000,
+      "water_and_sewer": 4500000,
+      "advertising": 500000,
+      "interior_painting_and_decorating": 2000000,
+      "amortized_leasing_costs": 1000000,
+      "amortized_tenant_improvement_costs": 1000000,
+      "miscellaneous": 1000000
+    },
+    "excluded_expenses_cents": {
+      "real_estate_taxes": 12000000,
+      "bad_debt": 0,
+      "depreciation": 5000000,
+      "mortgage_interest": 8000000
     }
   },
   {
-    "id": "synthetic-rpie-40-invalid",
-    "propertyId": "SIM-40-2025",
-    "propertyType": "residential",
-    "reportingPeriod": "2025",
-    "schemaVersion": "rpie-2025-residential-v1",
-    "sourceRevision": "synthetic-rpie-2025-v1",
-    "status": "invalid",
-    "unitCounts": {
-      "totalDwellingUnits": 40,
-      "regulatedResidentialUnits": 45,
-      "marketRateUnits": -5,
-      "otherResidentialUnits": 0
+    "schema_version": "rpie-demo-v1",
+    "synthetic": true,
+    "source_id": "DEMO-RPIE-001-2025-EXACT-COUNT",
+    "source_revision": 1,
+    "property": {
+      "property_id": "DEMO-RPIE-001",
+      "residential_units": 40,
+      "commercial_units": 0,
+      "owner_occupied_units": 0
     },
-    "annualIncomeCategories": {
-      "grossPotentialRent": 64000000,
-      "vacancyAndCollectionLoss": 4800000,
-      "netEffectiveGrossIncome": 59200000,
-      "otherOperatingIncome": 500000,
-      "totalIncome": 59700000
+    "reporting_period": {
+      "year": 2025,
+      "basis": "calendar",
+      "start": "2025-01-01",
+      "end": "2025-12-31"
     },
-    "operatingExpenses": {
-      "repairsAndMaintenance": 8500000,
-      "utilities": 4100000,
-      "insurance": 2600000,
-      "taxesAndAssessments": 1100000,
-      "management": 3200000,
-      "otherOperatingExpenses": 700000,
-      "totalOperatingExpenses": 20100000
+    "scope": {
+      "projection": "residential-only-main-statement-v1",
+      "other_income_categories_present": false,
+      "replacement_reserve_activity_present": false,
+      "rent_roll_included": false
+    },
+    "income": {
+      "regulated_units_reported": 20,
+      "unregulated_units_reported": 20,
+      "regulated_rental_income_cents": 51840000,
+      "unregulated_rental_income_cents": 57080000,
+      "other_service_income_cents": 1080000
+    },
+    "operating_expenses_cents": {
+      "fuel": 6000000,
+      "light_and_power": 2000000,
+      "cleaning_contracts": 2500000,
+      "wages_and_payroll": 10000000,
+      "repairs_and_maintenance": 13000000,
+      "management_and_administration": 6000000,
+      "insurance": 6500000,
+      "water_and_sewer": 4500000,
+      "advertising": 500000,
+      "interior_painting_and_decorating": 2000000,
+      "amortized_leasing_costs": 1000000,
+      "amortized_tenant_improvement_costs": 1000000,
+      "miscellaneous": 1000000
+    },
+    "excluded_expenses_cents": {
+      "real_estate_taxes": 12000000,
+      "bad_debt": 0,
+      "depreciation": 5000000,
+      "mortgage_interest": 8000000
     }
   },
   {
-    "id": "synthetic-rpie-40-incomplete",
-    "propertyId": "SIM-40-2025",
-    "propertyType": "residential",
-    "reportingPeriod": "2025",
-    "schemaVersion": "rpie-2025-residential-v1",
-    "sourceRevision": "synthetic-rpie-2025-v1",
-    "status": "incomplete",
-    "unitCounts": {
-      "totalDwellingUnits": 40,
-      "regulatedResidentialUnits": null,
-      "marketRateUnits": null,
-      "otherResidentialUnits": null
+    "schema_version": "rpie-demo-v1",
+    "synthetic": true,
+    "source_id": "DEMO-RPIE-001-2025-BELOW-COUNT",
+    "source_revision": 1,
+    "property": {
+      "property_id": "DEMO-RPIE-001",
+      "residential_units": 40,
+      "commercial_units": 0,
+      "owner_occupied_units": 0
     },
-    "annualIncomeCategories": {
-      "grossPotentialRent": 0,
-      "vacancyAndCollectionLoss": 0,
-      "netEffectiveGrossIncome": 0,
-      "otherOperatingIncome": 0,
-      "totalIncome": 0
+    "reporting_period": {
+      "year": 2025,
+      "basis": "calendar",
+      "start": "2025-01-01",
+      "end": "2025-12-31"
     },
-    "operatingExpenses": {
-      "repairsAndMaintenance": 0,
-      "utilities": 0,
-      "insurance": 0,
-      "taxesAndAssessments": 0,
-      "management": 0,
-      "otherOperatingExpenses": 0,
-      "totalOperatingExpenses": 0
+    "scope": {
+      "projection": "residential-only-main-statement-v1",
+      "other_income_categories_present": false,
+      "replacement_reserve_activity_present": false,
+      "rent_roll_included": false
+    },
+    "income": {
+      "regulated_units_reported": 19,
+      "unregulated_units_reported": 21,
+      "regulated_rental_income_cents": 51840000,
+      "unregulated_rental_income_cents": 57080000,
+      "other_service_income_cents": 1080000
+    },
+    "operating_expenses_cents": {
+      "fuel": 6000000,
+      "light_and_power": 2000000,
+      "cleaning_contracts": 2500000,
+      "wages_and_payroll": 10000000,
+      "repairs_and_maintenance": 13000000,
+      "management_and_administration": 6000000,
+      "insurance": 6500000,
+      "water_and_sewer": 4500000,
+      "advertising": 500000,
+      "interior_painting_and_decorating": 2000000,
+      "amortized_leasing_costs": 1000000,
+      "amortized_tenant_improvement_costs": 1000000,
+      "miscellaneous": 1000000
+    },
+    "excluded_expenses_cents": {
+      "real_estate_taxes": 12000000,
+      "bad_debt": 0,
+      "depreciation": 5000000,
+      "mortgage_interest": 8000000
+    }
+  },
+  {
+    "schema_version": "rpie-demo-v1",
+    "synthetic": true,
+    "source_id": "DEMO-RPIE-001-2025-EXACT-DECLINE",
+    "source_revision": 1,
+    "property": {
+      "property_id": "DEMO-RPIE-001",
+      "residential_units": 40,
+      "commercial_units": 0,
+      "owner_occupied_units": 0
+    },
+    "reporting_period": {
+      "year": 2025,
+      "basis": "calendar",
+      "start": "2025-01-01",
+      "end": "2025-12-31"
+    },
+    "scope": {
+      "projection": "residential-only-main-statement-v1",
+      "other_income_categories_present": false,
+      "replacement_reserve_activity_present": false,
+      "rent_roll_included": false
+    },
+    "income": {
+      "regulated_units_reported": 24,
+      "unregulated_units_reported": 16,
+      "regulated_rental_income_cents": 51840000,
+      "unregulated_rental_income_cents": 51080000,
+      "other_service_income_cents": 1080000
+    },
+    "operating_expenses_cents": {
+      "fuel": 6000000,
+      "light_and_power": 2000000,
+      "cleaning_contracts": 2500000,
+      "wages_and_payroll": 10000000,
+      "repairs_and_maintenance": 13000000,
+      "management_and_administration": 6000000,
+      "insurance": 6500000,
+      "water_and_sewer": 4500000,
+      "advertising": 500000,
+      "interior_painting_and_decorating": 2000000,
+      "amortized_leasing_costs": 1000000,
+      "amortized_tenant_improvement_costs": 1000000,
+      "miscellaneous": 1000000
+    },
+    "excluded_expenses_cents": {
+      "real_estate_taxes": 12000000,
+      "bad_debt": 0,
+      "depreciation": 5000000,
+      "mortgage_interest": 8000000
+    }
+  },
+  {
+    "schema_version": "rpie-demo-v1",
+    "synthetic": true,
+    "source_id": "DEMO-RPIE-001-2025-NEGATIVE",
+    "source_revision": 1,
+    "property": {
+      "property_id": "DEMO-RPIE-001",
+      "residential_units": 40,
+      "commercial_units": 0,
+      "owner_occupied_units": 0
+    },
+    "reporting_period": {
+      "year": 2025,
+      "basis": "calendar",
+      "start": "2025-01-01",
+      "end": "2025-12-31"
+    },
+    "scope": {
+      "projection": "residential-only-main-statement-v1",
+      "other_income_categories_present": false,
+      "replacement_reserve_activity_present": false,
+      "rent_roll_included": false
+    },
+    "income": {
+      "regulated_units_reported": 24,
+      "unregulated_units_reported": 16,
+      "regulated_rental_income_cents": 51840000,
+      "unregulated_rental_income_cents": 57080000,
+      "other_service_income_cents": 1080000
+    },
+    "operating_expenses_cents": {
+      "fuel": 6000000,
+      "light_and_power": 2000000,
+      "cleaning_contracts": 2500000,
+      "wages_and_payroll": 10000000,
+      "repairs_and_maintenance": 77000000,
+      "management_and_administration": 6000000,
+      "insurance": 6500000,
+      "water_and_sewer": 4500000,
+      "advertising": 500000,
+      "interior_painting_and_decorating": 2000000,
+      "amortized_leasing_costs": 1000000,
+      "amortized_tenant_improvement_costs": 1000000,
+      "miscellaneous": 1000000
+    },
+    "excluded_expenses_cents": {
+      "real_estate_taxes": 12000000,
+      "bad_debt": 0,
+      "depreciation": 5000000,
+      "mortgage_interest": 8000000
+    }
+  },
+  {
+    "schema_version": "rpie-demo-v1",
+    "synthetic": true,
+    "source_id": "DEMO-RPIE-001-2024-ZERO",
+    "source_revision": 1,
+    "property": {
+      "property_id": "DEMO-RPIE-001",
+      "residential_units": 40,
+      "commercial_units": 0,
+      "owner_occupied_units": 0
+    },
+    "reporting_period": {
+      "year": 2024,
+      "basis": "calendar",
+      "start": "2024-01-01",
+      "end": "2024-12-31"
+    },
+    "scope": {
+      "projection": "residential-only-main-statement-v1",
+      "other_income_categories_present": false,
+      "replacement_reserve_activity_present": false,
+      "rent_roll_included": false
+    },
+    "income": {
+      "regulated_units_reported": 24,
+      "unregulated_units_reported": 16,
+      "regulated_rental_income_cents": 51840000,
+      "unregulated_rental_income_cents": 58080000,
+      "other_service_income_cents": 1080000
+    },
+    "operating_expenses_cents": {
+      "fuel": 6000000,
+      "light_and_power": 2000000,
+      "cleaning_contracts": 2500000,
+      "wages_and_payroll": 10000000,
+      "repairs_and_maintenance": 68000000,
+      "management_and_administration": 6000000,
+      "insurance": 6500000,
+      "water_and_sewer": 4500000,
+      "advertising": 500000,
+      "interior_painting_and_decorating": 2000000,
+      "amortized_leasing_costs": 1000000,
+      "amortized_tenant_improvement_costs": 1000000,
+      "miscellaneous": 1000000
+    },
+    "excluded_expenses_cents": {
+      "real_estate_taxes": 12000000,
+      "bad_debt": 0,
+      "depreciation": 5000000,
+      "mortgage_interest": 8000000
+    }
+  },
+  {
+    "schema_version": "rpie-demo-v1",
+    "synthetic": true,
+    "source_id": "DEMO-RPIE-001-2025-INVALID",
+    "source_revision": 1,
+    "property": {
+      "property_id": "DEMO-RPIE-001",
+      "residential_units": 40,
+      "commercial_units": 0,
+      "owner_occupied_units": 0
+    },
+    "reporting_period": {
+      "year": 2025,
+      "basis": "calendar",
+      "start": "2025-01-01",
+      "end": "2025-12-31"
+    },
+    "scope": {
+      "projection": "residential-only-main-statement-v1",
+      "other_income_categories_present": false,
+      "replacement_reserve_activity_present": false,
+      "rent_roll_included": false
+    },
+    "income": {
+      "regulated_units_reported": 45,
+      "unregulated_units_reported": 16,
+      "regulated_rental_income_cents": 51840000,
+      "unregulated_rental_income_cents": 57080000,
+      "other_service_income_cents": 1080000
+    },
+    "operating_expenses_cents": {
+      "fuel": 6000000,
+      "light_and_power": 2000000,
+      "cleaning_contracts": 2500000,
+      "wages_and_payroll": 10000000,
+      "repairs_and_maintenance": 13000000,
+      "management_and_administration": 6000000,
+      "insurance": 6500000,
+      "water_and_sewer": 4500000,
+      "advertising": 500000,
+      "interior_painting_and_decorating": 2000000,
+      "amortized_leasing_costs": 1000000,
+      "amortized_tenant_improvement_costs": 1000000,
+      "miscellaneous": 1000000
+    },
+    "excluded_expenses_cents": {
+      "real_estate_taxes": 12000000,
+      "bad_debt": 0,
+      "depreciation": 5000000,
+      "mortgage_interest": 8000000
+    }
+  },
+  {
+    "schema_version": "rpie-demo-v1",
+    "synthetic": true,
+    "source_id": "DEMO-RPIE-001-2025-INCOMPLETE",
+    "source_revision": 1,
+    "property": {
+      "property_id": "DEMO-RPIE-001",
+      "residential_units": 40,
+      "commercial_units": 0,
+      "owner_occupied_units": 0
+    },
+    "reporting_period": {
+      "year": 2025,
+      "basis": "calendar",
+      "start": "2025-01-01",
+      "end": "2025-12-31"
+    },
+    "scope": {
+      "projection": "residential-only-main-statement-v1",
+      "other_income_categories_present": false,
+      "replacement_reserve_activity_present": false,
+      "rent_roll_included": false
+    },
+    "income": {
+      "regulated_units_reported": null,
+      "unregulated_units_reported": 16,
+      "regulated_rental_income_cents": 51840000,
+      "unregulated_rental_income_cents": 57080000,
+      "other_service_income_cents": 1080000
+    },
+    "operating_expenses_cents": {
+      "fuel": 6000000,
+      "light_and_power": 2000000,
+      "cleaning_contracts": 2500000,
+      "wages_and_payroll": 10000000,
+      "repairs_and_maintenance": 13000000,
+      "management_and_administration": 6000000,
+      "insurance": 6500000,
+      "water_and_sewer": 4500000,
+      "advertising": 500000,
+      "interior_painting_and_decorating": 2000000,
+      "amortized_leasing_costs": 1000000,
+      "amortized_tenant_improvement_costs": 1000000,
+      "miscellaneous": 1000000
+    },
+    "excluded_expenses_cents": {
+      "real_estate_taxes": 12000000,
+      "bad_debt": 0,
+      "depreciation": 5000000,
+      "mortgage_interest": 8000000
     }
   }
 ]

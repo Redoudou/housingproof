@@ -1,61 +1,23 @@
-# RPIE residential subset schema (internal synthetic model)
+# Synthetic RPIE subset and source mapping
 
-The repository uses a narrow internal JSON schema that maps to the main concepts in the NYC DOF RPIE worksheet. This is not an official DOF export schema and is intentionally limited to the fields used in the milestone-one proof.
+The authoritative machine-readable contract is [`data/schema.json`](../data/schema.json). This is a narrow internal projection, not an official DOF JSON/XML format. It replaces the starter's generic gross-potential-rent and vacancy-loss P&L model.
 
-## Example object
+Source: [RPIE-2025 worksheet and instructions](https://www.nyc.gov/assets/finance/downloads/pdf/rpie/rpie-worksheet.pdf), revised March 2, 2026. It is preparation guidance, not the electronic filing form. See the [MVP plan](mvp-plan.md) for the source review and unverified rent-roll-template details.
 
-```json
-{
-  "id": "synthetic-rpie-40-24",
-  "propertyId": "SIM-40-2025",
-  "propertyType": "residential",
-  "reportingPeriod": "2025",
-  "schemaVersion": "rpie-2025-residential-v1",
-  "sourceRevision": "synthetic-rpie-2025-v1",
-  "status": "valid",
-  "unitCounts": {
-    "totalDwellingUnits": 40,
-    "regulatedResidentialUnits": 24,
-    "marketRateUnits": 16,
-    "otherResidentialUnits": 0
-  },
-  "annualIncomeCategories": {
-    "grossPotentialRent": 64000000,
-    "vacancyAndCollectionLoss": 4800000,
-    "netEffectiveGrossIncome": 59200000,
-    "otherOperatingIncome": 500000,
-    "totalIncome": 59700000
-  },
-  "operatingExpenses": {
-    "repairsAndMaintenance": 8500000,
-    "utilities": 4100000,
-    "insurance": 2600000,
-    "taxesAndAssessments": 1100000,
-    "management": 3200000,
-    "otherOperatingExpenses": 700000,
-    "totalOperatingExpenses": 20100000
-  }
-}
-```
+| Our field | Source | Interpretation |
+|---|---|---|
+| `reporting_period` | I | Full calendar-year bounds |
+| `property.residential_units` | E.1 | Residential capacity |
+| `income.regulated_units_reported` and regulated receipts | J.1a | Reported count and annual income |
+| Unregulated count and receipts | J.1b | Reported count and annual income |
+| Other service income | J.10d | The one additional income category used here |
+| Operating expense slots | L(I).1–13 | Explicit components, not a supplied total |
+| Excluded expenses | L(I).15 | Separately stored; excluded from the MVP balance |
 
-## Mapping to the worksheet
+All other income categories, owner-occupied units, commercial activity, and replacement-reserve activity are explicitly absent in this subset. Ingestion rejects unknown fields, wrong schema/scope, missing components, non-integer or oversized values, inconsistent counts, and partial periods. Amounts are integer USD cents, bounded to 10^12 per line; counts are bounded to 10,000. The supported sample has 40 units.
 
-- `reportingPeriod` maps to the filing year / reporting period.
-- `unitCounts.totalDwellingUnits` maps to the residential unit summary section.
-- `unitCounts.regulatedResidentialUnits` maps to the number of rent-regulated units.
-- `annualIncomeCategories.*` maps to the annual income categories in the worksheet.
-- `operatingExpenses.*` maps to the annual expense categories in the worksheet.
+The runtime fixture list is `data/filings.json`: eight scenario source records plus deliberately invalid and incomplete examples. The independent scenario oracle in `data/fixtures/demo-cases.json` covers eight comparisons. Fixture checks establish the dataset contract and arithmetic, not cryptography.
 
-## Validation rules
+The 2024 comparison uses the same MVP projection; it is not an independently mapped 2024 official form. Rent-roll questions are deferred until the current template and status values are checked. Latest monthly rent and end-of-period occupancy are not interchangeable with annual receipts or worksheet E's taxable-status-date vacancy.
 
-- `propertyId` is required.
-- `reportingPeriod` is required.
-- `schemaVersion` is required.
-- `totalDwellingUnits` must be a positive integer.
-- `regulatedResidentialUnits` must be an integer between zero and `totalDwellingUnits`.
-- Monetary values are stored as integer USD cents to avoid floating point noise.
-- The synthetic data omits real addresses, taxpayer identifiers, and tenant identities.
-
-## Implementation note
-
-This schema is deliberately narrow and internal. It is for the synthetic demo only and is not an official DOF export format.
+Q001 proves only a reported regulated count. The proposed Q002 balance is the three included income components minus L(I).1–13. It is not DOF-assessed NOI, legal rent, or a compliance verdict.
