@@ -18,12 +18,12 @@
   </head>
   <body>
     <h1>Housingproof — simulated DOF + agency demo</h1>
-    <p class="muted">All data and issuance are clearly marked as simulated. No underlying unit counts or financial values are returned to the agency portal.</p>
+    <p class="muted">Synthetic data and simulated issuance only. Real proof generation is not ready; the agency portal cannot yet return verified answers.</p>
 
     <div class="grid">
       <section class="panel">
         <h2>DOF environment (simulation)</h2>
-        <button id="loadFilingBtn">Load synthetic filing</button>
+        <button id="loadFilingBtn">Register synthetic filing</button>
         <div id="dofOutput" class="muted"></div>
       </section>
 
@@ -35,7 +35,7 @@
         <input id="questionInput" value="Does this filing report at least 20 rent-regulated residential units?" readonly />
         <button id="askBtn">Ask approved question</button>
         <div id="agencyOutput" class="muted" style="margin-top: 16px;"></div>
-        <button id="exportBtn" style="display: none;">Export answer bundle</button>
+        <button id="exportBtn" hidden>Export verified answer bundle</button>
       </section>
     </div>
 

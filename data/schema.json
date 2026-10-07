@@ -1,0 +1,272 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:lotb:rpie-demo:v1",
+  "title": "Synthetic RPIE main-statement subset; not an official DOF format",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "synthetic",
+    "source_id",
+    "source_revision",
+    "property",
+    "reporting_period",
+    "scope",
+    "income",
+    "operating_expenses_cents",
+    "excluded_expenses_cents"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "rpie-demo-v1"
+    },
+    "synthetic": {
+      "const": true
+    },
+    "source_id": {
+      "type": "string",
+      "pattern": "^DEMO-RPIE-001-[A-Z0-9-]+$"
+    },
+    "source_revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000
+    },
+    "property": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "property_id",
+        "residential_units",
+        "commercial_units",
+        "owner_occupied_units"
+      ],
+      "properties": {
+        "property_id": {
+          "const": "DEMO-RPIE-001"
+        },
+        "residential_units": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "commercial_units": {
+          "const": 0
+        },
+        "owner_occupied_units": {
+          "const": 0
+        }
+      }
+    },
+    "reporting_period": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "year",
+        "basis",
+        "start",
+        "end"
+      ],
+      "properties": {
+        "year": {
+          "type": "integer",
+          "enum": [
+            2024,
+            2025
+          ]
+        },
+        "basis": {
+          "const": "calendar"
+        },
+        "start": {
+          "type": "string",
+          "format": "date"
+        },
+        "end": {
+          "type": "string",
+          "format": "date"
+        }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "projection",
+        "other_income_categories_present",
+        "replacement_reserve_activity_present",
+        "rent_roll_included"
+      ],
+      "properties": {
+        "projection": {
+          "const": "residential-only-main-statement-v1"
+        },
+        "other_income_categories_present": {
+          "const": false
+        },
+        "replacement_reserve_activity_present": {
+          "const": false
+        },
+        "rent_roll_included": {
+          "const": false
+        }
+      }
+    },
+    "income": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "regulated_units_reported",
+        "unregulated_units_reported",
+        "regulated_rental_income_cents",
+        "unregulated_rental_income_cents",
+        "other_service_income_cents"
+      ],
+      "properties": {
+        "regulated_units_reported": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "unregulated_units_reported": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "regulated_rental_income_cents": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000000
+        },
+        "unregulated_rental_income_cents": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000000
+        },
+        "other_service_income_cents": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000000
+        }
+      }
+    },
+    "operating_expenses_cents": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fuel",
+        "light_and_power",
+        "cleaning_contracts",
+        "wages_and_payroll",
+        "repairs_and_maintenance",
+        "management_and_administration",
+        "insurance",
+        "water_and_sewer",
+        "advertising",
+        "interior_painting_and_decorating",
+        "amortized_leasing_costs",
+        "amortized_tenant_improvement_costs",
+        "miscellaneous"
+      ],
+      "properties": {
+        "fuel": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000000
+        },
+        "light_and_power": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000000
+        },
+        "cleaning_contracts": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000000
+        },
+        "wages_and_payroll": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000000
+        },
+        "repairs_and_maintenance": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000000
+        },
+        "management_and_administration": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000000
+        },
+        "insurance": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000000
+        },
+        "water_and_sewer": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000000
+        },
+        "advertising": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000000
+        },
+        "interior_painting_and_decorating": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000000
+        },
+        "amortized_leasing_costs": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000000
+        },
+        "amortized_tenant_improvement_costs": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000000
+        },
+        "miscellaneous": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000000
+        }
+      }
+    },
+    "excluded_expenses_cents": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "real_estate_taxes",
+        "bad_debt",
+        "depreciation",
+        "mortgage_interest"
+      ],
+      "properties": {
+        "real_estate_taxes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000000
+        },
+        "bad_debt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000000
+        },
+        "depreciation": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000000
+        },
+        "mortgage_interest": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000000
+        }
+      }
+    }
+  }
+}

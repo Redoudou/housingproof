@@ -1,26 +1,18 @@
 import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { verifyAnswerBundle } from '../src/bundle.js';
 
-import { loadPublicKeyPem, verifyManifestSignature } from '../src/filings.js';
-
-const bundlePath = process.argv[2] ?? join(process.cwd(), 'proof-artifacts', 'bundle.json');
-const raw = JSON.parse(readFileSync(bundlePath, 'utf8')) as any;
-
-if (!raw || !raw.manifest || !raw.publicInputs) {
-  console.error('Bundle is missing required fields.');
-  process.exit(1);
+// The trust anchor comes from the verifier operator, never from the bundle or a private-key loader.
+const [bundlePath, publicKeyPath] = process.argv.slice(2);
+if (!bundlePath || !publicKeyPath) {
+  console.error('Usage: npm run verify -- BUNDLE.json TRUSTED-ISSUER-PUBLIC.pem');
+  process.exitCode = 1;
+} else {
+  try {
+    const result = await verifyAnswerBundle(JSON.parse(readFileSync(bundlePath, 'utf8')), readFileSync(publicKeyPath, 'utf8'));
+    console.log(JSON.stringify(result, null, 2));
+    process.exitCode = 1; // Fail closed while proof verification is unavailable.
+  } catch {
+    console.error('Verification failed: unreadable or malformed bundle/trusted key.');
+    process.exitCode = 1;
+  }
 }
-
-const ok = verifyManifestSignature(raw.manifest, loadPublicKeyPem());
-if (!ok) {
-  console.error('Bundle verification failed: bad issuer signature.');
-  process.exit(1);
-}
-
-const thresholdMatches = Number(raw.threshold) === 20;
-if (!thresholdMatches) {
-  console.error('Bundle verification failed: mismatched threshold.');
-  process.exit(1);
-}
-
-console.log(JSON.stringify({ verified: true, status: raw.status, answer: raw.answer, question: raw.question, threshold: raw.threshold }, null, 2));

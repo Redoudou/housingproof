@@ -1,0 +1,52 @@
+{
+  "catalog_version": "rpie-demo-catalog-v1",
+  "status": "draft-specification-not-implemented",
+  "predicates": [
+    {
+      "id": "Q001",
+      "version": 1,
+      "question": "Does this filing report at least 20 rent-regulated residential units?",
+      "source_fields": [
+        "income.regulated_units_reported"
+      ],
+      "allowed_parameters": {
+        "minimum_units": [
+          20
+        ]
+      },
+      "operator": ">=",
+      "output": "boolean",
+      "notes": "Reported J.1a count; not independently established legal regulation status."
+    },
+    {
+      "id": "Q002",
+      "version": 1,
+      "question": "Did the operating balance calculated from reported income and expenses fall by more than 20% from the previous year?",
+      "source_fields": [
+        "income.*_income_cents",
+        "operating_expenses_cents.*",
+        "property.property_id",
+        "reporting_period"
+      ],
+      "allowed_parameters": {
+        "decline_basis_points": [
+          2000
+        ]
+      },
+      "operator": ">",
+      "formula": "10000 * (previous_balance - current_balance) > 2000 * previous_balance",
+      "preconditions": [
+        "Both complete compatible projections",
+        "Same property",
+        "Consecutive full calendar years",
+        "Previous balance > 0"
+      ],
+      "output": "boolean",
+      "on_unmet_precondition": "UNAVAILABLE",
+      "notes": "MVP operating balance; not DOF valuation-adjusted NOI."
+    }
+  ],
+  "unsupported_predicate_or_parameters": "DENIED",
+  "invalid_proof": "REJECTED",
+  "thresholds_requester_editable": false
+}
