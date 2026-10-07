@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Housingproof Demo</title>
+    <style>
+      body { font-family: sans-serif; margin: 32px; background: #f8fafc; color: #0f172a; }
+      .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+      .panel { background: white; border: 1px solid #dbeafe; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05); }
+      button, select, input { font: inherit; }
+      button { background: #0f172a; color: white; border: 0; border-radius: 8px; padding: 10px 14px; margin-top: 12px; cursor: pointer; }
+      select, input { width: 100%; box-sizing: border-box; padding: 8px; margin-top: 8px; }
+      .muted { color: #475569; }
+      .status { font-weight: 700; }
+      .answer { font-size: 30px; font-weight: 700; }
+    </style>
+  </head>
+  <body>
+    <h1>Housingproof — simulated DOF + agency demo</h1>
+    <p class="muted">All data and issuance are clearly marked as simulated. No underlying unit counts or financial values are returned to the agency portal.</p>
+
+    <div class="grid">
+      <section class="panel">
+        <h2>DOF environment (simulation)</h2>
+        <button id="loadFilingBtn">Load synthetic filing</button>
+        <div id="dofOutput" class="muted"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Agency portal</h2>
+        <label for="filingSelect">Registered filing</label>
+        <select id="filingSelect"></select>
+        <label for="questionInput">Approved question</label>
+        <input id="questionInput" value="Does this filing report at least 20 rent-regulated residential units?" readonly />
+        <button id="askBtn">Ask approved question</button>
+        <div id="agencyOutput" class="muted" style="margin-top: 16px;"></div>
+        <button id="exportBtn" style="display: none;">Export answer bundle</button>
+      </section>
+    </div>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

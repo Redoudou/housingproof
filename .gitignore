@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.nargo/
+target/
+proof-artifacts/
+.env
+issuer-private.pem
+issuer-public.pem
+*.log
