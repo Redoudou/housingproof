@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="550" viewBox="0 0 1400 550" role="img" aria-labelledby="title desc">
+  <title id="title">Housingproof — Keep the data private. Unlock the answers.</title>
+  <desc id="desc">A proposed workflow: an agency sends an approved question to a protected DOF filing and receives a verifiable answer. The underlying filing remains with DOF. Synthetic prototype.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0C1B2A"/><stop offset="1" stop-color="#173C47"/></linearGradient>
+    <pattern id="grid" width="36" height="36" patternUnits="userSpaceOnUse"><path d="M36 0H0V36" fill="none" stroke="#A3D0D0" stroke-opacity=".07"/></pattern>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 8 4 0 8" fill="#81D9CB"/></marker>
+  </defs>
+  <rect width="1400" height="550" rx="24" fill="url(#bg)"/>
+  <rect x="650" width="750" height="550" rx="24" fill="url(#grid)"/>
+  <g font-family="DejaVu Sans, Arial, sans-serif">
+    <rect x="60" y="49" width="42" height="42" rx="12" fill="#81D9CB"/>
+    <path d="M72 80V64L81 59l9 5v16M78 80v-7h6v7" stroke="#102B35" stroke-width="2.5" fill="none"/>
+    <text x="118" y="79" font-size="25" font-weight="700" fill="#FFFFFF">Housingproof</text>
+    <text x="60" y="185" font-size="17" letter-spacing="3" fill="#81D9CB">CONFIDENTIAL DATA. USEFUL ANSWERS.</text>
+    <text x="57" y="262" font-size="52" font-weight="700" fill="#FFFFFF">Keep the data private.</text>
+    <text x="57" y="330" font-size="52" font-weight="700" fill="#FFFFFF">Unlock the answers.</text>
+    <text x="60" y="395" font-size="21" fill="#B7CCD0">A new way to ask questions of protected</text>
+    <text x="60" y="426" font-size="21" fill="#B7CCD0">housing records. Without exchanging the filing.</text>
+    <rect x="60" y="469" width="241" height="32" rx="16" fill="#FFFFFF" fill-opacity=".09"/>
+    <text x="78" y="491" font-size="13" letter-spacing="1.5" fill="#D8E8E8">SYNTHETIC PROTOTYPE</text>
+    <text x="861" y="80" font-size="13" letter-spacing="2" fill="#B7CCD0">PROPOSED WORKFLOW</text>
+    <rect x="778" y="126" width="228" height="224" rx="20" fill="#FFFFFF" fill-opacity=".06" stroke="#567881"/>
+    <text x="892" y="165" text-anchor="middle" font-size="12" font-weight="700" fill="#B7CCD0">DOF / PROTECTED SOURCE</text>
+    <path d="M872 225v-17a21 21 0 0 1 42 0v17" stroke="#81D9CB" stroke-width="5" fill="none"/>
+    <rect x="858" y="223" width="70" height="52" rx="10" fill="#81D9CB"/>
+    <circle cx="893" cy="244" r="5" fill="#173640"/><path d="M893 247v9" stroke="#173640" stroke-width="4"/>
+    <text x="845" y="307" font-size="18" font-weight="700" fill="#FFFFFF">RPIE filing</text>
+    <text x="892" y="332" text-anchor="middle" font-size="11" fill="#B7CCD0">The underlying data stays here.</text>
+    <rect x="1080" y="126" width="250" height="224" rx="20" fill="#F0F8F5"/>
+    <text x="1105" y="165" font-size="15" font-weight="700" fill="#315C63">AUTHORIZED AGENCY</text>
+    <rect x="1105" y="196" width="200" height="84" rx="12" fill="#DCEDE7"/>
+    <text x="1127" y="230" font-size="17" font-weight="700" fill="#153C43">One approved</text>
+    <text x="1127" y="255" font-size="17" font-weight="700" fill="#153C43">question.</text>
+    <text x="1108" y="315" font-size="17" font-weight="700" fill="#153C43">A verifiable answer.</text>
+    <path d="M1080 218H1012" stroke="#81D9CB" stroke-width="3" marker-end="url(#arrow)"/>
+    <path d="M1006 301H1074" stroke="#81D9CB" stroke-width="3" marker-end="url(#arrow)"/>
+    <rect x="778" y="390" width="552" height="74" rx="14" fill="#FFFFFF" fill-opacity=".07"/>
+    <text x="803" y="420" font-size="16" font-weight="700" fill="#81D9CB">ASK → ANSWER → VERIFY</text>
+    <text x="803" y="447" font-size="14" fill="#D8E8E8">An answer and proof travel. The confidential filing does not.</text>
+  </g>
+</svg>
