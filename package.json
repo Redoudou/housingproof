@@ -15,7 +15,10 @@
     "build:site": "node scripts/build-site.mjs",
     "zk:build": "node --import tsx scripts/build-zk.ts",
     "test:zk": "node --import tsx scripts/test-zk.ts",
-    "test:browser": "node --import tsx scripts/test-browser.ts"
+    "test:browser": "node --import tsx scripts/test-browser.ts",
+    "prose:check": "node scripts/humanize.mjs",
+    "prose:fix": "node scripts/humanize.mjs --write",
+    "prose:test": "node --test scripts/humanize.node.mjs"
   },
   "dependencies": {
     "@aztec/bb.js": "0.82.2",

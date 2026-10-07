@@ -1,0 +1,56 @@
+name: Format prose
+on:
+  push:
+    paths:
+      - 'README.md'
+      - 'docs/**/*.md'
+      - 'site/**/*.html'
+      - 'scripts/humanize.mjs'
+      - '.github/workflows/prose-format.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: prose-format-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  format:
+    if: github.ref_type == 'branch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node --test scripts/humanize.node.mjs
+      - run: node scripts/humanize.mjs --write
+      - name: Check and save formatting
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_BRANCH: ${{ github.ref_name }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          if git diff --quiet; then
+            echo "Prose already formatted."
+            exit 0
+          fi
+          npm ci
+          npm run check
+          npm test
+          npm run build:site
+          git diff --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- README.md docs site
+          git commit -m 'style: apply automatic prose formatting'
+          git push origin "HEAD:refs/heads/$SOURCE_BRANCH"
+          # GITHUB_TOKEN pushes do not trigger another push workflow.
+          # Explicitly run checks against the new branch tip.
+          gh workflow run checks.yml --ref "$SOURCE_BRANCH"
+          if [ "$SOURCE_BRANCH" = "$DEFAULT_BRANCH" ]; then
+            gh workflow run pages.yml --ref "$SOURCE_BRANCH"
+          fi

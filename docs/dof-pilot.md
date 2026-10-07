@@ -85,7 +85,7 @@ The reviewer handoff should include a pinned source release, reproducible synthe
 
 ## Suggested build order
 
-1. Genuine Q001/Q002 proofs and independent verification — done in v0.2.0-alpha.1 (see [MVP validation](mvp-validation.md)).
+1. Done in v0.2.0-alpha.1: genuine Q001/Q002 proofs and independent verification (see [MVP validation](mvp-validation.md)).
 2. Add the reproducible 100-record synthetic sample, validated batch importer, and comparison report.
 3. Separate custodian and recipient access, implement private persistence and policy/audit controls, and package a repeatable local evaluation.
 4. Have DOF review the adapter, environment, authorized recipients/questions, and derived disclosures before any real-sample trial.

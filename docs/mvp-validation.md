@@ -1,4 +1,4 @@
-# MVP validation — October 7, 2026
+# MVP validation, October 7, 2026
 
 The final implementation uses **Noir 1.0.0-beta.3 / Barretenberg 0.82.2 / UltraPlonk**, with the shared 34-field Poseidon2 source commitment. The earlier default UltraHonk spike and the slow SHA-256-in-circuit experiment are not the delivered stack.
 

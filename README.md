@@ -12,7 +12,7 @@
 
 ## The idea
 
-**What if a housing agency could ask a confidential filing a question—without receiving the filing?**
+**What if a housing agency could ask a confidential filing a question, without receiving the filing?**
 
 Housingproof explores that model using New York City's RPIE income-and-expense reports. DOF would retain the protected record. An authorized agency would ask a narrow, approved question and independently verify the answer.
 
@@ -71,9 +71,9 @@ Both panels share one local simulation. They illustrate roles, not production au
 
 ## A proposed Department of Finance pilot
 
-DOF could audit and run this Apache-2.0 code in its own environment, then evaluate a controlled sample of about 100 filings. Start with synthetic records; use authorized real samples only inside the DOF environment after the required review. The current app has no bulk importer and does not yet generate genuine proofs.
+DOF could audit and run this Apache-2.0 code in its own environment, then evaluate a controlled sample of about 100 filings. Start with synthetic records; use authorized real samples only inside the DOF environment after the required review. The current app generates genuine proofs for the two approved questions but has no bulk importer.
 
-The proposed flow is **import → validate → register → ask an approved question → generate a proof inside DOF → verify outside the source environment**. DOF retains source access. The authorized recipient receives only the approved answer, permitted public metadata, and proof—not the filing or hidden input values. The answer itself discloses information; proofs do not authorize disclosure or establish that the owner's report is true.
+The proposed flow is **import → validate → register → ask an approved question → generate a proof inside DOF → verify outside the source environment**. DOF retains source access. The authorized recipient receives only the approved answer, permitted public metadata, and proof, not the filing or hidden input values. The answer itself discloses information; proofs do not authorize disclosure or establish that the owner's report is true.
 
 [Read the pilot walkthrough, access boundaries, and acceptance checklist](docs/dof-pilot.md).
 
