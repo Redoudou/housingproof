@@ -1,65 +1,119 @@
-# Housingproof
+<div align="center">
 
-**Keep the data private. Unlock the answers.**
+![Housingproof — Keep the data private. Unlock the answers.](assets/housingproof-hero.svg)
 
-A standalone synthetic demonstration of a proposed workflow: DOF keeps an RPIE filing, an authorized agency asks a fixed question, and a cryptographically verified answer returns without the filing.
+[![Checks](https://github.com/Redoudou/housingproof/actions/workflows/checks.yml/badge.svg)](https://github.com/Redoudou/housingproof/actions/workflows/checks.yml)
+![Stage: Synthetic prototype](https://img.shields.io/badge/stage-synthetic%20prototype-315c63)
+[![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-0c1b2a)](LICENSE)
 
-## Current state
+**[Project site](https://redoudou.github.io/housingproof/) · [Quick start](#quick-start) · [MVP plan](docs/mvp-plan.md) · [Release notes](docs/releases/v0.1.0-alpha.1.md) · [Releases](https://github.com/Redoudou/housingproof/releases)**
 
-The repository has a local custodian/agency interface, validated synthetic data, signed simulator source manifests, and a build plan. **It does not yet generate or independently verify a working ZK proof.**
+</div>
 
-The initial starter's circuit used an arithmetic commitment while its service used SHA-256. Its verifier checked a source signature without verifying the answer proof. Those do not establish the proposed ZK claim. The unsafe proof path is disabled; the agency interface withholds the answer and reports `service_unavailable`. Signing a source receipt does not put a “verified” label on an answer.
+## The idea
 
-See the authoritative [MVP plan](docs/mvp-plan.md) and [implementation review](docs/implementation-review.md).
+**What if a housing agency could ask a confidential filing a question—without receiving the filing?**
 
-## Data and first question
+Housingproof explores that model using New York City's RPIE income-and-expense reports. DOF would retain the protected record. An authorized agency would ask a narrow, approved question and independently verify the answer.
 
-All property identifiers and values are fictional. The dataset contains one 40-apartment property, synthetic 2024/2025 records, scenario variants, and invalid/incomplete inputs. No real addresses, BBLs, BINs, tenant identities, or taxpayer identifiers are present.
+> **Keep the data private. Unlock the answers.**
 
-The internal [schema](data/schema.json) is mapped to the [official RPIE-2025 worksheet](https://www.nyc.gov/assets/finance/downloads/pdf/rpie/rpie-worksheet.pdf). It is not an official DOF interchange format. [Mapping and limits](docs/rpie-schema.md).
+The first question is deliberately simple:
 
-The first approved question is:
+**“Does this filing report at least 20 rent-regulated residential units?”**
 
-> Does this filing report at least 20 rent-regulated residential units?
+The potential outcome: better evidence for housing decisions, with controlled disclosures instead of copies of confidential records.
 
-Its fixed threshold is 20. Local fixture calculations cover 24 → YES, 20 → YES, 19 → NO. These are **arithmetic oracle results, not verified proofs**. A proof would establish computation against reported data; it would not establish that an owner's declaration is accurate or that disclosure is legally authorized.
+## What you can try today
 
-A second question—whether a defined reported operating balance declined by more than 20%—has fixture cases and a specification, but no circuit or API implementation. An exact 20% decline is NO; an absent or nonpositive prior balance is UNAVAILABLE.
+| Capability | Status |
+|---|---|
+| Synthetic building filings for 2024 and 2025 | Available |
+| Source-mapped schema and exact question definitions | Available |
+| Input validation and signed simulator source receipts | Available |
+| Local custodian / agency interface | Available |
+| Genuine Q001 ZK proof and independent verification | **Next milestone** |
+| Cross-year operating-balance proof | Planned |
 
-## Run locally
+**This is a synthetic prototype. It does not yet produce a ZK-verified answer.** The local UI reports proof generation as unavailable and withholds YES/NO and bundle export. A signed source receipt authenticates the simulated source; it does not verify an answer.
 
-Node.js 22 or later and Python 3 are required.
+The linked project site presents the concept and current status. It is **not a hosted prover**. Its deployment is managed by the [Pages workflow](.github/workflows/pages.yml); the URL becomes available after its first successful deployment.
+
+## Quick start
+
+Requires **Node.js 22+** and **Python 3**.
 
 ```bash
+git clone https://github.com/Redoudou/housingproof.git
+cd housingproof
 npm ci
 npm run check
 npm test
 npm run dev
 ```
 
-Open http://localhost:3000. The service binds to loopback.
+Open **http://localhost:3000**.
 
-1. Choose a synthetic record and register it in the DOF simulation.
-2. Invalid/incomplete records are rejected. A valid record receives a signed source receipt.
-3. Ask the approved question. The UI currently explains that proof generation is unavailable; it does not return a verified YES/NO or export an unverified bundle.
+1. Select a fictional filing and register it in the DOF simulation.
+2. Inspect its signed source receipt. Incomplete or invalid records are rejected.
+3. Ask the approved question. Until the real proof milestone is complete, the agency view explains that no verified answer is available.
 
-Both panels share a local process. They illustrate roles; they are not production authentication or network isolation. Do not deploy this simulation with confidential data.
+Both panels share one local simulation. They illustrate roles, not production authentication or network isolation.
 
-## Checks and standalone verifier
+## One building. Two years. Clear boundaries.
+
+The dataset contains one fictional 40-apartment property, synthetic 2024/2025 records, and boundary, stress, invalid, and incomplete variants. It contains no real addresses, taxpayer identifiers, or tenant identities.
+
+- **Q001:** reported regulated units ≥ 20. The local arithmetic cases cover 24 → YES, 20 → YES, and 19 → NO.
+- **Q002, planned:** calculated reported operating balance declines by **more than** 20%. Exactly 20% is NO. A missing or nonpositive prior balance is UNAVAILABLE.
+
+These are fixture calculations, **not cryptographic proofs**. The [internal schema](data/schema.json) follows a narrow subset of the [official RPIE-2025 worksheet](https://www.nyc.gov/assets/finance/downloads/pdf/rpie/rpie-worksheet.pdf); it is not an official DOF interchange format. [Read the mapping](docs/rpie-schema.md).
+
+## Under the hood
+
+```mermaid
+flowchart TD
+    subgraph Custodian["Simulated DOF environment"]
+        F["Synthetic filing"] --> C["Validated source + private commitment salt"]
+        C --> P["ZK prover — next milestone"]
+    end
+    A["Agency: approved question"] --> P
+    P --> B["Public answer + proof"]
+    B --> V["Independent verifier — next milestone"]
+```
+
+The diagram shows the target flow. The prover/verifier path is intentionally disabled until the circuit, source commitment, public inputs, and trusted verification key agree and pass genuine proof tests. [Implementation review](docs/implementation-review.md).
+
+## Find your way around
+
+| Path | Purpose |
+|---|---|
+| [`docs/mvp-plan.md`](docs/mvp-plan.md) | Product scope, trust model, and build gates |
+| [`data/`](data/) | Synthetic sources, schema, and fixed question catalog |
+| [`server/`](server/) | Local custodian service; private runtime keys are ignored |
+| [`src/`](src/) | Validation, receipts, and verification boundaries |
+| [`circuits/`](circuits/) | Disabled legacy Noir placeholder awaiting replacement |
+| [`public/`](public/) | Local demonstration interface |
+| [`site/`](site/) | Static project presentation for GitHub Pages |
+| [`docs/releases/`](docs/releases/) | Versioned release notes |
+
+## Checks
 
 ```bash
-npm run check   # TypeScript and source-mapped fixture arithmetic
-npm test        # Input, policy, manifest, API, and fail-closed verifier checks
-npm run demo    # Private local arithmetic oracle; no cryptography
+npm run check    # TypeScript + fixture validation
+npm test         # Input, policy, receipt, API, and verification-boundary tests
+npm run demo     # Local arithmetic oracle; no cryptography
 npm run verify -- answer-bundle.json trusted-issuer-public.pem
 ```
 
-The verifier takes a separately supplied public trust anchor, never a key from a bundle. It exits unsuccessfully while ZK verification is unavailable. The tests do not claim to validate a proof or circuit. CI repeats the checks.
+The verifier uses a separately supplied public trust anchor. It fails closed while ZK verification is unavailable. Application tests do not establish that a circuit or proof works.
 
-Private issuer keys are created at runtime under ignored `server/keys/`. Salts remain in the server registration state and are never included in public manifests. Commitments cover the full normalized subset; the current host-side JSON encoding still needs a matching, tested circuit encoding before proofs can be enabled. The signed audit digest is salted and describes serialized synthetic records, not faithful parsing of an original official form.
+## Next: the first real proof
 
-## Next implementation milestone
+Implement a shared commitment encoding and fixed-Q001 circuit, pin compatible Noir/Barretenberg versions and a trusted verification key, then demonstrate genuine YES and NO proofs. Reject altered answers and mismatched sources. Verify an exported bundle without the private filing. **Only then enable the verified-answer experience.**
 
-Replace the disabled legacy circuit with a fixed-Q001 circuit and shared canonical commitment encoding. Pin compatible Noir/Barretenberg versions and trusted verification keys. Demonstrate genuine YES and NO proofs, then reject altered answers, changed sources/public inputs, and untrusted keys. Export a portable proof bundle and verify it without the filing. Only then enable a verified UI state.
+A proof would establish computation against reported data, not the accuracy of an owner's declaration. Real inputs, recipients, and derived disclosures would require City authorization and review.
 
-No blockchain, wallet, real City integration, production deployment, or real-data access is part of this milestone.
+---
+
+[Apache 2.0](LICENSE) · Independent prototype; no NYC or DOF endorsement is implied.

@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Housingproof explores verifiable answers from confidential NYC housing filings. Synthetic RPIE prototype; real ZK proofs are the next milestone.">
+  <meta name="theme-color" content="#0c1b2a">
+  <title>Housingproof — Keep the data private. Unlock the answers.</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;background:#f3f7f5;color:#15343e;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.6}a{color:inherit;text-underline-offset:4px}header,main,footer{max-width:1120px;margin:auto;padding:24px}header{display:flex;justify-content:space-between;align-items:center;gap:18px}header strong{font-size:22px}nav{display:flex;gap:22px}main{padding-top:8px}.hero{display:block;width:100%;height:auto;border-radius:20px}.intro{max-width:750px;padding:32px 0 12px}h1{font-size:clamp(28px,4.5vw,44px);line-height:1.15;letter-spacing:-1px;margin:12px 0 20px}h2{font-size:24px;letter-spacing:-.4px}.muted{color:#577078}.eyebrow{text-transform:uppercase;letter-spacing:2px;font-size:12px;font-weight:700}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}.card{background:white;border:1px solid #d7e4de;border-radius:16px;padding:24px}.number{display:block;font-size:13px;color:#477b76;font-weight:700;margin-bottom:14px}.card h3{font-size:20px;margin:0 0 12px}.card p{margin:0;color:#577078}.status{margin:32px 0;background:#e2eee8;border:1px solid #bdd3c7;border-radius:14px;padding:22px 26px}.question{margin:40px 0;padding:30px;background:#0c1b2a;border-radius:16px;color:white}.question blockquote{font-size:clamp(22px,3.5vw,30px);line-height:1.4;margin:12px 0 0}.links{display:flex;gap:14px;flex-wrap:wrap;margin:24px 0}.button{display:inline-block;background:#153c43;color:white;border-radius:9px;padding:11px 18px;text-decoration:none;font-weight:600}.button.secondary{background:white;color:#153c43;border:1px solid #cbdcd3}.note{font-size:14px}.version{display:inline-block;border-radius:20px;padding:4px 12px;background:#d3e4db;font-size:12px;font-weight:700}footer{font-size:13px;color:#577078;border-top:1px solid #d7e4de;margin-top:40px}@media(max-width:650px){header{align-items:flex-start;flex-direction:column}.grid{grid-template-columns:1fr}header,main,footer{padding:18px}.hero{border-radius:12px}.intro{padding-top:20px}nav{gap:16px}}
+  </style>
+</head>
+<body>
+<header><strong>Housingproof</strong><nav aria-label="Main"><a href="https://github.com/Redoudou/housingproof">Repository</a><a href="https://github.com/Redoudou/housingproof/blob/main/docs/mvp-plan.md">MVP plan</a><a href="https://github.com/Redoudou/housingproof/releases">Releases</a></nav></header>
+<main>
+  <img class="hero" src="assets/housingproof-hero.svg" alt="Housingproof: keep the data private, unlock the answers. Proposed flow from protected DOF source to approved agency question and verifiable answer." width="1400" height="550">
+  <section class="intro"><p class="eyebrow">Confidential records. Better questions.</p><h1>The filing stays protected.<br>The City gets an answer.</h1><p>What if a housing agency could ask a confidential income-and-expense filing a question without receiving the filing? Housingproof explores that workflow using synthetic New York City RPIE records.</p></section>
+  <section class="grid" aria-label="The proposed experience">
+    <article class="card"><span class="number">01 / KEEP</span><h3>Protect the source.</h3><p>DOF would retain the confidential filing and control the questions that can be asked.</p></article>
+    <article class="card"><span class="number">02 / ASK</span><h3>Ask one question.</h3><p>An authorized agency selects a narrow question, rather than requesting a copy of the records.</p></article>
+    <article class="card"><span class="number">03 / VERIFY</span><h3>Verify the answer.</h3><p>The target experience returns an answer and a proof that can be checked independently.</p></article>
+  </section>
+  <section class="question"><p class="eyebrow">First approved question</p><blockquote>“Does this filing report at least 20 rent-regulated residential units?”</blockquote></section>
+  <section class="status" aria-labelledby="status"><span class="version">0.1.0-alpha.1 / synthetic prototype</span><h2 id="status">The foundation is here. Real proofs come next.</h2><p>The repository includes a source-mapped dataset, validation, signed simulator receipts, a local interface, tests, and a build plan. Genuine ZK proof generation and independent verification are not implemented yet. The local app withholds unverified answers.</p><p class="note">This page presents the project. It does not run a custodian service or prove statements. All records and issuance are simulated.</p></section>
+  <div class="links"><a class="button" href="https://github.com/Redoudou/housingproof#quick-start">Run locally</a><a class="button secondary" href="https://github.com/Redoudou/housingproof/blob/main/docs/mvp-plan.md">Read the build plan</a><a class="button secondary" href="https://github.com/Redoudou/housingproof/blob/main/docs/releases/v0.1.0-alpha.1.md">Read release notes</a></div>
+  <p class="muted note">A future proof would verify a calculation against reported data, not establish that an owner’s report is accurate. Real use and disclosures would require City authorization and review.</p>
+</main>
+<footer>Independent prototype. No NYC or DOF endorsement is implied. <a href="https://github.com/Redoudou/housingproof/blob/main/LICENSE">Apache 2.0</a>.</footer>
+</body>
+</html>

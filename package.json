@@ -1,6 +1,6 @@
 {
   "name": "housingproof",
-  "version": "1.0.0",
+  "version": "0.1.0-alpha.1",
   "private": true,
   "type": "module",
   "scripts": {
@@ -11,7 +11,8 @@
     "demo": "tsx scripts/demo.ts",
     "typecheck": "tsc --noEmit",
     "fixtures": "python3 scripts/validate-rpie-fixtures.py",
-    "check": "npm run typecheck && npm run fixtures"
+    "check": "npm run typecheck && npm run fixtures",
+    "build:site": "node scripts/build-site.mjs"
   },
   "dependencies": {
     "cors": "^2.8.5",
@@ -25,5 +26,12 @@
     "tsx": "^4.19.0",
     "typescript": "^5.6.3",
     "vitest": "^3.2.7"
+  },
+  "description": "Synthetic RPIE prototype for privacy-preserving, verifiable housing answers",
+  "homepage": "https://redoudou.github.io/housingproof/",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Redoudou/housingproof.git"
   }
 }
