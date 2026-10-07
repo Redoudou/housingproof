@@ -1,22 +1,17 @@
 import assert from 'node:assert/strict';
-import { generateKeyPairSync } from 'node:crypto';
 import { readFileSync, mkdirSync, writeFileSync, mkdtempSync, cpSync, symlinkSync, rmSync } from 'node:fs';
 import { tmpdir, cpus, totalmem } from 'node:os';
 import { resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { Noir } from '@noir-lang/noir_js';
 import { syntheticFilings } from '../src/dataset.js';
-import { generateManifest, createSalt, type Filing } from '../src/filings.js';
-import { generateProof, answerFor, type Registration } from '../src/proof.js';
+import { generateIssuerKeys, type Filing } from '../src/filings.js';
+import { createRegistration, generateProof, answerFor } from '../src/proof.js';
 import { verifyAnswerBundle, type AnswerBundle } from '../src/bundle.js';
 import { POLICIES, type PredicateId } from '../src/policy.js';
 import { sourceInput, projectionInput, computeSaltedCommitment } from '../src/commitment.js';
-const keys = generateKeyPairSync('rsa', { modulusLength: 2048 });
-const privateKey = keys.privateKey.export({ type: 'pkcs8', format: 'pem' }).toString();
-const publicKey = keys.publicKey.export({ type: 'spki', format: 'pem' }).toString();
-function register(f: Filing): Registration {
-  const salt = createSalt(); return { filing: f, salt, manifest: generateManifest(f, salt, privateKey) };
-}
+const { privateKeyPem: privateKey, publicKeyPem: publicKey } = generateIssuerKeys();
+const register = (f: Filing) => createRegistration(f, privateKey);
 const find = (suffix: string) => syntheticFilings.find(f => (f as Filing).source_id.endsWith(suffix)) as Filing;
 console.log(syntheticFilings.map(f => (f as Filing).source_id).join('\n'));
 const prior = register(find('2024-BASE'));
@@ -51,7 +46,7 @@ for (const mutate of [
   const b: AnswerBundle = structuredClone(firstBundle); mutate(b);
   assert.equal((await verifyAnswerBundle(b, publicKey)).verified, false);
 }
-const unrelated = generateKeyPairSync('rsa', { modulusLength: 2048 }).publicKey.export({ type: 'spki', format: 'pem' }).toString();
+const unrelated = generateIssuerKeys().publicKeyPem;
 assert.equal((await verifyAnswerBundle(firstBundle, unrelated)).verified, false);
 const altered = structuredClone(firstBundle);
 const bytes = Buffer.from(altered.proof, 'base64'); bytes[Math.floor(bytes.length / 2)] ^= 1; altered.proof = bytes.toString('base64');
@@ -82,7 +77,7 @@ assert.equal(answerFor('Q002', current.filing, otherProperty), null);
 const q2artifact = JSON.parse(readFileSync('proof-artifacts/Q002.json', 'utf8'));
 for (const changedPrior of [otherProperty, zero, structuredClone(current.filing)]) {
   const changedManifest = { ...prior.manifest, propertyId: changedPrior.property.property_id, reportingPeriod: String(changedPrior.reporting_period.year), sourceId: changedPrior.source_id, commitment: computeSaltedCommitment(changedPrior, prior.salt) };
-  await assert.rejects(new Noir(q2artifact).execute({ current: sourceInput(current.manifest), prior: sourceInput(changedManifest), current_values: projectionInput(current.filing, current.salt), prior_values: projectionInput(changedPrior, prior.salt), predicate: 2, version: 1, threshold: 2000, answer: true }));
+  await assert.rejects(new Noir(q2artifact).execute({ current: sourceInput(current.manifest), prior: sourceInput(changedManifest), current_values: projectionInput(current.filing, current.salt), prior_values: projectionInput(changedPrior, prior.salt), predicate: POLICIES.Q002.number, version: POLICIES.Q002.version, threshold: POLICIES.Q002.threshold, answer: true }));
 }
 console.log('PASS private witness, cross-property, cross-year and positive-prior circuit constraints');
 // Standalone verifier has no dataset, schema, issuer private key or server modules.
@@ -100,6 +95,5 @@ try {
   assert.match(result.stdout, /"verified": true/);
   console.log('PASS isolated CLI verification without source records or private key');
 } finally { rmSync(isolated, { recursive: true, force: true }); }
-mkdirSync('proof-artifacts', { recursive: true });
 writeFileSync('proof-artifacts/benchmark.json', JSON.stringify({ date: new Date().toISOString(), node: process.version, platform: process.platform, architecture: process.arch, cpu: cpus()[0]?.model, logicalCpus: cpus().length, memoryBytes: totalmem(), tests: report }, null, 2));
 console.log(JSON.stringify(report, null, 2));

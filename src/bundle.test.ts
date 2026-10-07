@@ -1,14 +1,11 @@
-import { generateKeyPairSync } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 import { verifyAnswerBundle } from './bundle.js';
 import { syntheticFilings } from './dataset.js';
-import { createSalt, generateManifest, type Filing } from './filings.js';
+import { createSalt, generateIssuerKeys, generateManifest, type Filing } from './filings.js';
 import { POLICIES } from './policy.js';
 import { expectedPublicInputs } from './commitment.js';
 import { trustedCircuit } from './zk-runtime.js';
-const pair = generateKeyPairSync('rsa', { modulusLength: 2048 });
-const privateKey = pair.privateKey.export({ type: 'pkcs8', format: 'pem' }).toString();
-const publicKey = pair.publicKey.export({ type: 'spki', format: 'pem' }).toString();
+const { privateKeyPem: privateKey, publicKeyPem: publicKey } = generateIssuerKeys();
 const manifest = generateManifest(syntheticFilings[1] as Filing, createSalt(), privateKey);
 const trust = trustedCircuit('Q001');
 const bundle = { version: 'housingproof-bundle-3', predicateId: 'Q001', predicateVersion: 1, question: POLICIES.Q001.question,

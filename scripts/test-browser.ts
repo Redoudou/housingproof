@@ -1,10 +1,9 @@
 import assert from 'node:assert/strict';
-import { generateKeyPairSync } from 'node:crypto';
 import { mkdirSync } from 'node:fs';
 import { chromium } from 'playwright';
 import { createApp } from '../server/custodian.js';
-const pair = generateKeyPairSync('rsa', { modulusLength: 2048 });
-const server = createApp({ keys: { privateKeyPem: pair.privateKey.export({ type: 'pkcs8', format: 'pem' }).toString(), publicKeyPem: pair.publicKey.export({ type: 'spki', format: 'pem' }).toString() } }).listen(0, '127.0.0.1');
+import { generateIssuerKeys } from '../src/filings.js';
+const server = createApp({ keys: generateIssuerKeys() }).listen(0, '127.0.0.1');
 await new Promise<void>(resolve => server.once('listening', resolve));
 const address = server.address(); if (!address || typeof address === 'string') throw Error('No test port');
 const base = `http://127.0.0.1:${address.port}`;

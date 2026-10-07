@@ -1,15 +1,10 @@
 import { syntheticFilings } from './dataset.js';
-import { generateKeyPairSync } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { APPROVED_QUESTION, computeSaltedCommitment, createSalt, evaluateThreshold, generateManifest, validateFiling, verifyManifestSignature, type Filing } from './filings.js';
+import { APPROVED_QUESTION, computeSaltedCommitment, createSalt, evaluateThreshold, generateIssuerKeys, generateManifest, validateFiling, verifyManifestSignature, type Filing } from './filings.js';
 
 const filing = (id: string): Filing => structuredClone(syntheticFilings.find((v) => (v as Filing).source_id === id)) as Filing;
-export function testKeys() {
-  const keys = generateKeyPairSync('rsa', { modulusLength: 2048 });
-  return { privateKeyPem: keys.privateKey.export({ type: 'pkcs8', format: 'pem' }).toString(), publicKeyPem: keys.publicKey.export({ type: 'spki', format: 'pem' }).toString() };
-}
-const keys = testKeys();
+const keys = generateIssuerKeys();
 
 describe('source-mapped synthetic filing contract', () => {
   it('keeps every scenario source identical to the runtime dataset', () => {
@@ -59,6 +54,6 @@ describe('source-mapped synthetic filing contract', () => {
     expect(JSON.stringify(manifest)).not.toContain(salt);
     expect(manifest).not.toHaveProperty('salt');
     expect(verifyManifestSignature({ ...manifest, sourceRevision: 2 }, keys.publicKeyPem)).toBe(false);
-    expect(verifyManifestSignature(manifest, testKeys().publicKeyPem)).toBe(false);
+    expect(verifyManifestSignature(manifest, generateIssuerKeys().publicKeyPem)).toBe(false);
   });
 });

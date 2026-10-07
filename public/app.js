@@ -1,7 +1,13 @@
 const el = id => document.getElementById(id);
 const filingSelect = el('filingSelect'), priorSelect = el('priorSelect'), questionSelect = el('questionSelect');
 let bundle = null, questions = [], sources = [], busy = false;
-function clearAnswer() { bundle = null; el('agencyOutput').textContent = 'No answer requested yet.'; el('agencyOutput').dataset.status = ''; el('proofStats').textContent = ''; el('exportBtn').hidden = true; el('verifyBtn').disabled = true; el('tamperBtn').disabled = true; el('verifyOutput').textContent = 'A changed answer, proof, source, or approved parameter must be rejected.'; el('verifyOutput').dataset.status = ''; }
+const show = (id, text, status = '') => { el(id).textContent = text; el(id).dataset.status = status; };
+const label = status => (status || 'service_unavailable').replaceAll('_', ' ').toUpperCase();
+const selectedQuestion = () => questions.find(q => q.id === questionSelect.value);
+function clearAnswer() {
+  bundle = null; show('agencyOutput', 'No answer requested yet.'); el('proofStats').textContent = ''; el('exportBtn').hidden = true;
+  el('verifyBtn').disabled = true; el('tamperBtn').disabled = true; show('verifyOutput', 'A changed answer, proof, source, or approved parameter must be rejected.');
+}
 function setBusy(value) {
   busy = value;
   for (const id of ['filingSelect', 'priorSelect', 'questionSelect', 'loadFilingBtn', 'loadPriorBtn', 'askBtn', 'bundleFile', 'keyBtn']) el(id).disabled = value;
@@ -15,10 +21,10 @@ async function jsonFetch(url, options = {}) {
 }
 const post = (url, body) => jsonFetch(url, { method: 'POST', body: JSON.stringify(body) });
 function refreshQuestion() {
-  const question = questions.find(q => q.id === questionSelect.value);
+  const question = selectedQuestion(), needsPrior = question?.sources > 1;
   el('questionText').textContent = question?.question || '';
-  el('priorControls').hidden = questionSelect.value !== 'Q002';
-  el('sourceSummary').textContent = `Current: ${filingSelect.value}${questionSelect.value === 'Q002' ? ` · Prior: ${priorSelect.value || 'not selected'}` : ''}`;
+  el('priorControls').hidden = !needsPrior;
+  el('sourceSummary').textContent = `Current: ${filingSelect.value}${needsPrior ? ` · Prior: ${priorSelect.value || 'not selected'}` : ''}`;
 }
 async function loadSources() {
   sources = await jsonFetch('/api/filings');
@@ -32,10 +38,9 @@ async function register(select) {
   clearAnswer(); setBusy(true); el('dofOutput').textContent = 'Validating and registering synthetic source…';
   try {
     const result = await post('/api/filings/register', { filingId: select.value });
-    el('dofOutput').textContent = `${result.filingId} registered. Signed by ${result.manifest.issuer}. Commitment: ${result.commitment}.`;
-    el('dofOutput').dataset.status = '';
+    show('dofOutput', `${result.filingId} registered. Signed by ${result.manifest.issuer}. Commitment: ${result.commitment}.`);
     await loadSources();
-  } catch (error) { el('dofOutput').textContent = error.message; el('dofOutput').dataset.status = 'rejected'; }
+  } catch (error) { show('dofOutput', error.message, 'rejected'); }
   finally { setBusy(false); }
 }
 async function ask() {
@@ -43,7 +48,7 @@ async function ask() {
   clearAnswer(); setBusy(true);
   el('agencyOutput').textContent = 'Generating a fresh ZK proof, then independently checking its signature, statement, and proof. This may take several seconds…';
   try {
-    const q = questions.find(q => q.id === questionSelect.value);
+    const q = selectedQuestion();
     const result = await post('/api/filings/answer', { filingId: filingSelect.value, priorFilingId: priorSelect.value, question: q.question, threshold: q.threshold });
     if (result.verification !== 'verified' || typeof result.answer !== 'boolean' || !result.bundle) throw new Error('No verified answer available.');
     bundle = result.bundle;
@@ -54,17 +59,16 @@ async function ask() {
     el('agencyOutput').append(status, answer, metadata); el('agencyOutput').dataset.status = 'verified';
     el('proofStats').textContent = `Fresh proof · ${(result.provingMs / 1000).toFixed(1)}s proving + self-check · ${(result.proofBytes / 1024).toFixed(1)} KiB proof. Raw filing excluded.`;
     el('exportBtn').hidden = false;
-  } catch (error) { el('agencyOutput').textContent = `${error.status === 'missing_data' ? 'UNAVAILABLE' : (error.status || 'service_unavailable').replaceAll('_', ' ').toUpperCase()}: ${error.message}`; el('agencyOutput').dataset.status = 'rejected'; }
+  } catch (error) { show('agencyOutput', `${error.status === 'missing_data' ? 'UNAVAILABLE' : label(error.status)}: ${error.message}`, 'rejected'); }
   finally { setBusy(false); }
 }
 async function verify(value, tampered = false) {
   if (busy) return;
-  setBusy(true); el('verifyOutput').textContent = 'Verifying public bundle only…'; el('verifyOutput').dataset.status = '';
+  setBusy(true); show('verifyOutput', 'Verifying public bundle only…');
   try {
     const result = await post('/api/verify', value);
-    el('verifyOutput').textContent = `${tampered ? 'Changed-answer test: ' : ''}${result.verified ? 'VERIFIED' : 'REJECTED'}. ${result.reason}`;
-    el('verifyOutput').dataset.status = result.verified ? 'verified' : 'rejected';
-  } catch (error) { el('verifyOutput').textContent = `${tampered ? 'Changed-answer test: ' : ''}${(error.status || 'service_unavailable').replaceAll('_', ' ').toUpperCase()}. ${error.message}`; el('verifyOutput').dataset.status = 'rejected'; }
+    show('verifyOutput', `${tampered ? 'Changed-answer test: ' : ''}${result.verified ? 'VERIFIED' : 'REJECTED'}. ${result.reason}`, result.verified ? 'verified' : 'rejected');
+  } catch (error) { show('verifyOutput', `${tampered ? 'Changed-answer test: ' : ''}${label(error.status)}. ${error.message}`, 'rejected'); }
   finally { setBusy(false); }
 }
 function download(text, filename, type) { const url = URL.createObjectURL(new Blob([text], { type })); const a = document.createElement('a'); a.href = url; a.download = filename; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); }
@@ -74,7 +78,7 @@ el('askBtn').addEventListener('click', ask);
 el('exportBtn').addEventListener('click', () => { if (bundle) download(JSON.stringify(bundle, null, 2), 'answer-bundle.json', 'application/json'); });
 el('verifyBtn').addEventListener('click', () => { if (bundle) verify(bundle); });
 el('tamperBtn').addEventListener('click', () => { if (!bundle) return; const altered = structuredClone(bundle); altered.answer = !altered.answer; altered.publicInputs[altered.publicInputs.length - 1] = `0x${(altered.answer ? '1' : '0').padStart(64, '0')}`; verify(altered, true); });
-el('bundleFile').addEventListener('change', async event => { const file = event.target.files[0]; if (!file) return; try { if (file.size > 128000) throw new Error('Bundle is too large.'); await verify(JSON.parse(await file.text())); } catch { el('verifyOutput').textContent = 'REJECTED. Import a valid bundle JSON file under 128 KB.'; el('verifyOutput').dataset.status = 'rejected'; } event.target.value = ''; });
+el('bundleFile').addEventListener('change', async event => { const file = event.target.files[0]; if (!file) return; try { if (file.size > 128000) throw new Error('Bundle is too large.'); await verify(JSON.parse(await file.text())); } catch { show('verifyOutput', 'REJECTED. Import a valid bundle JSON file under 128 KB.', 'rejected'); } event.target.value = ''; });
 el('keyBtn').addEventListener('click', async () => { try { const response = await fetch('/api/trust/issuer'); if (!response.ok) throw Error(); download(await response.text(), 'trusted-issuer-public.pem', 'text/plain'); } catch { el('verifyOutput').textContent = 'Public key download unavailable.'; } });
 for (const select of [filingSelect, priorSelect, questionSelect]) select.addEventListener('change', () => { clearAnswer(); refreshQuestion(); });
 (async () => { try { questions = await jsonFetch('/api/questions'); await loadSources(); } catch { el('agencyOutput').textContent = 'Local custodian service unavailable. Start npm run dev.'; } })();
