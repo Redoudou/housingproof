@@ -24,6 +24,8 @@ jobs:
       - run: npm ci
       - run: npm run check
       - run: npm test
+      - run: npm run zk:build
+      - run: npm run test:zk
       - name: Publish the documented prerelease
         uses: actions/github-script@v7
         with:
@@ -44,7 +46,7 @@ jobs:
                 ...context.repo,
                 tag_name: tag,
                 target_commitish: context.sha,
-                name: `${tag} — Synthetic prototype foundation`,
+                name: `${tag} — Synthetic proof MVP`,
                 body,
                 draft: false,
                 prerelease: true,

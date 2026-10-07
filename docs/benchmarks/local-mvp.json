@@ -1,0 +1,74 @@
+{
+  "date": "2026-10-07T14:28:22.051Z",
+  "node": "v24.19.0",
+  "platform": "linux",
+  "architecture": "x64",
+  "cpu": "AMD EPYC 9V74 80-Core Processor",
+  "logicalCpus": 9,
+  "memoryBytes": 10451464192,
+  "tests": [
+    {
+      "id": "Q001",
+      "source": "DEMO-RPIE-001-2025-BASE",
+      "answer": true,
+      "proofBytes": 2144,
+      "peakRssKb": 227056,
+      "generationMs": 6585,
+      "verificationMs": 4995
+    },
+    {
+      "id": "Q001",
+      "source": "DEMO-RPIE-001-2025-EXACT-COUNT",
+      "answer": true,
+      "proofBytes": 2144,
+      "peakRssKb": 219276,
+      "generationMs": 5914,
+      "verificationMs": 4571
+    },
+    {
+      "id": "Q001",
+      "source": "DEMO-RPIE-001-2025-BELOW-COUNT",
+      "answer": false,
+      "proofBytes": 2144,
+      "peakRssKb": 226808,
+      "generationMs": 7418,
+      "verificationMs": 5027
+    },
+    {
+      "id": "Q002",
+      "source": "DEMO-RPIE-001-2025-BASE",
+      "answer": false,
+      "proofBytes": 2144,
+      "peakRssKb": 262268,
+      "generationMs": 11194,
+      "verificationMs": 8682
+    },
+    {
+      "id": "Q002",
+      "source": "DEMO-RPIE-001-2025-STRESS",
+      "answer": true,
+      "proofBytes": 2144,
+      "peakRssKb": 267988,
+      "generationMs": 11210,
+      "verificationMs": 7986
+    },
+    {
+      "id": "Q002",
+      "source": "DEMO-RPIE-001-2025-EXACT-DECLINE",
+      "answer": false,
+      "proofBytes": 2144,
+      "peakRssKb": 273400,
+      "generationMs": 11080,
+      "verificationMs": 8418
+    },
+    {
+      "id": "Q002",
+      "source": "DEMO-RPIE-001-2025-NEGATIVE",
+      "answer": true,
+      "proofBytes": 2144,
+      "peakRssKb": 273404,
+      "generationMs": 11972,
+      "verificationMs": 10383
+    }
+  ]
+}

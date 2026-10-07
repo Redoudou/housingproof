@@ -1,44 +1,31 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Housingproof Demo</title>
-    <style>
-      body { font-family: sans-serif; margin: 32px; background: #f8fafc; color: #0f172a; }
-      .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-      .panel { background: white; border: 1px solid #dbeafe; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05); }
-      button, select, input { font: inherit; }
-      button { background: #0f172a; color: white; border: 0; border-radius: 8px; padding: 10px 14px; margin-top: 12px; cursor: pointer; }
-      select, input { width: 100%; box-sizing: border-box; padding: 8px; margin-top: 8px; }
-      .muted { color: #475569; }
-      .status { font-weight: 700; }
-      .answer { font-size: 30px; font-weight: 700; }
-    </style>
-  </head>
-  <body>
-    <h1>Housingproof — simulated DOF + agency demo</h1>
-    <p class="muted">Synthetic data and simulated issuance only. Real proof generation is not ready; the agency portal cannot yet return verified answers.</p>
-
-    <div class="grid">
-      <section class="panel">
-        <h2>DOF environment (simulation)</h2>
-        <button id="loadFilingBtn">Register synthetic filing</button>
-        <div id="dofOutput" class="muted"></div>
-      </section>
-
-      <section class="panel">
-        <h2>Agency portal</h2>
-        <label for="filingSelect">Registered filing</label>
-        <select id="filingSelect"></select>
-        <label for="questionInput">Approved question</label>
-        <input id="questionInput" value="Does this filing report at least 20 rent-regulated residential units?" readonly />
-        <button id="askBtn">Ask approved question</button>
-        <div id="agencyOutput" class="muted" style="margin-top: 16px;"></div>
-        <button id="exportBtn" hidden>Export verified answer bundle</button>
-      </section>
-    </div>
-
-    <script src="/app.js"></script>
-  </body>
-</html>
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Housingproof | Private filings. Verified answers.</title>
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header><a class="brand" href="/">⌂ <span>Housingproof</span></a><span class="tag">SYNTHETIC DATA · REAL ZK PROOFS</span><a href="https://github.com/Redoudou/housingproof">Repository ↗</a></header>
+<main>
+<section class="hero"><p class="eyebrow">CONFIDENTIAL DATA. USEFUL ANSWERS.</p><h1>Keep the filing private.<br>Prove the answer.</h1><p class="lead">A simulated DOF keeps the source. An agency asks one approved question. A zero-knowledge proof makes the answer independently checkable.</p><div class="flow"><span>01 &nbsp; Register a source</span><span>02 &nbsp; Ask &amp; prove</span><span>03 &nbsp; Verify anywhere</span></div></section>
+<div class="grid">
+<section class="panel" aria-labelledby="custodianTitle"><div class="panel-head"><span class="step">01</span><span class="pill">PROTECTED ENVIRONMENT</span></div><h2 id="custodianTitle">DOF simulation</h2><p class="muted">Choose fictional records. Registration validates each filing and signs its salted source commitment.</p>
+<label for="filingSelect">Current source</label><select id="filingSelect"></select><button id="loadFilingBtn">Register current filing</button>
+<div id="priorControls" hidden><label for="priorSelect">Prior-year source</label><select id="priorSelect"></select><button id="loadPriorBtn" class="secondary">Register prior filing</button></div>
+<div id="dofOutput" class="notice" role="status" aria-live="polite">Select a source to begin.</div>
+<div class="privacy"><span class="lock">⌑</span><div><strong>The source stays here.</strong><p>Unit counts, financial amounts, private salt, and issuer private key never enter the public answer bundle.</p></div></div>
+<p class="small">The signed receipt authenticates a simulated source. The proof verifies the computation. Neither establishes the truth of an owner's declaration.</p></section>
+<section class="panel" aria-labelledby="agencyTitle"><div class="panel-head"><span class="step">02</span><span class="pill">APPROVED DISCLOSURE</span></div><h2 id="agencyTitle">Agency portal</h2><p class="muted">Ask a fixed question. Receive an answer only after the proof and source signatures pass verification.</p>
+<label for="questionSelect">Approved question</label><select id="questionSelect"><option value="Q001">Q001 · At least 20 regulated units?</option><option value="Q002">Q002 · Operating balance down more than 20%?</option></select>
+<p id="questionText" class="question"></p><p id="sourceSummary" class="small"></p><button id="askBtn">Generate &amp; verify proof</button>
+<div id="agencyOutput" class="result" role="status" aria-live="polite"><span class="muted">No answer requested yet.</span></div><p id="proofStats" class="small"></p><button id="exportBtn" class="secondary" hidden>Export verified answer bundle ↓</button>
+<p class="small">Q002 compares consecutive years and requires a positive prior balance. Exactly 20% decline is NO. Missing or incomparable inputs produce UNAVAILABLE.</p></section>
+</div>
+<section class="panel verifier" aria-labelledby="verifierTitle"><div class="panel-head"><span class="step">03</span><span class="pill">PUBLIC BUNDLE ONLY</span></div><h2 id="verifierTitle">Verify without the filing</h2><p class="muted">Check the current answer or import an exported bundle. This verifier uses the simulator's public issuer key and locally pinned circuit keys, never a key supplied in the bundle.</p>
+<div class="actions"><button id="verifyBtn" disabled>Verify current bundle</button><label class="file-label" for="bundleFile">Import bundle JSON<input id="bundleFile" type="file" accept=".json,application/json"></label><button id="tamperBtn" class="secondary" disabled>Test a changed answer</button></div>
+<div id="verifyOutput" class="notice" role="status" aria-live="polite">A changed answer, proof, source, or approved parameter must be rejected.</div>
+<details><summary>Verify in a separate environment</summary><p>Export the bundle, obtain the issuer public key from a trusted simulator operator, and run the standalone verifier. It needs no private filing or issuer private key.</p><button id="keyBtn" class="secondary">Download simulator public key ↓</button><pre>npm run verify -- answer-bundle.json trusted-issuer-public.pem</pre><p class="small">For this local demo, the key download comes from the same simulator. In a real deployment, trust anchors must be provisioned independently.</p></details></section>
+<footer><strong>Independent synthetic prototype.</strong> No NYC or DOF endorsement. Both roles share one local application; production access control and confidential-data authorization are outside this demo.</footer>
+</main><script src="/app.js"></script>
+</body></html>

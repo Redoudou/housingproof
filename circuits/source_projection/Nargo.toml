@@ -1,0 +1,7 @@
+[package]
+name = "source_projection"
+type = "lib"
+authors = ["Housingproof"]
+compiler_version = "=1.0.0-beta.3"
+
+[dependencies]

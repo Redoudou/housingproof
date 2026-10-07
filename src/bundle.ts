@@ -1,26 +1,41 @@
-import { APPROVED_QUESTION, APPROVED_THRESHOLD, PREDICATE_ID, verifyManifestSignature, type Manifest } from './filings.js';
-
-type AnswerBundle = {
-  version: string; question: string; predicateId: string; predicateVersion: number; threshold: number; answer: boolean;
-  sourceId: string; propertyId: string; reportingPeriod: string; schemaVersion: string; sourceRevision: number;
-  commitment: string; manifest: Manifest; proof: string;
-  publicInputs: { commitment: string; threshold: number; answer: boolean };
+import { verifyManifestSignature, type Manifest } from './filings.js';
+import { POLICIES, type PredicateId } from './policy.js';
+import { expectedPublicInputs } from './commitment.js';
+import { runProofWorker, trustedCircuit } from './zk-runtime.js';
+export type AnswerBundle = {
+  version: 'housingproof-bundle-3'; predicateId: PredicateId; predicateVersion: number;
+  question: string; threshold: number; answer: boolean;
+  manifests: Manifest[]; circuitId: string; verificationKeyHash: string;
+  proof: string; publicInputs: string[];
 };
-export type BundleVerification = { verified: false; status: 'rejected' | 'service_unavailable'; reason: string };
-
-// An issuer signature authenticates a source manifest, not a computed answer.
-// Never return verified=true until a genuine proof is checked using a trusted VK.
+export type BundleVerification = { verified: boolean; status: 'verified_yes' | 'verified_no' | 'rejected' | 'service_unavailable'; reason: string };
+const BUNDLE_KEYS = ['version', 'predicateId', 'predicateVersion', 'question', 'threshold', 'answer', 'manifests', 'circuitId', 'verificationKeyHash', 'proof', 'publicInputs'].sort().join(',');
 export async function verifyAnswerBundle(value: unknown, trustedIssuerKey: string): Promise<BundleVerification> {
   const reject = (reason: string): BundleVerification => ({ verified: false, status: 'rejected', reason });
-  if (!value || typeof value !== 'object') return reject('Malformed bundle');
-  const bundle = value as AnswerBundle;
-  if (bundle.version !== 'housingproof-bundle-2' || bundle.predicateId !== PREDICATE_ID || bundle.predicateVersion !== 1
-    || bundle.question !== APPROVED_QUESTION || bundle.threshold !== APPROVED_THRESHOLD || typeof bundle.answer !== 'boolean') return reject('Unapproved statement or bundle version');
-  if (!bundle.manifest || !verifyManifestSignature(bundle.manifest, trustedIssuerKey)) return reject('Invalid signature or untrusted issuer');
-  for (const key of ['sourceId', 'propertyId', 'reportingPeriod', 'schemaVersion', 'sourceRevision', 'commitment'] as const)
-    if (bundle[key] !== bundle.manifest[key]) return reject('Statement does not match the signed source');
-  if (!bundle.publicInputs || bundle.publicInputs.threshold !== bundle.threshold || bundle.publicInputs.answer !== bundle.answer
-    || bundle.publicInputs.commitment !== bundle.commitment) return reject('Public inputs do not match the statement');
-  if (typeof bundle.proof !== 'string' || !bundle.proof.length) return reject('No cryptographic proof supplied');
-  return { verified: false, status: 'service_unavailable', reason: 'Independent ZK verification and a trusted circuit verification key are not implemented. Signature checks alone do not verify an answer.' };
+  if (!value || typeof value !== 'object' || Array.isArray(value) || Object.keys(value).sort().join(',') !== BUNDLE_KEYS) return reject('Malformed bundle');
+  const b = value as AnswerBundle;
+  if (b.version !== 'housingproof-bundle-3' || !Object.hasOwn(POLICIES, b.predicateId)) return reject('Unapproved bundle or predicate');
+  const p = POLICIES[b.predicateId];
+  if (b.predicateVersion !== p.version || b.question !== p.question || b.threshold !== p.threshold || typeof b.answer !== 'boolean') return reject('Unapproved statement parameters');
+  if (!Array.isArray(b.manifests) || b.manifests.length !== p.sources
+    || !b.manifests.every(m => verifyManifestSignature(m, trustedIssuerKey))) return reject('Invalid source signature or untrusted issuer');
+  if (p.sources > 1) {
+    const [current, prior] = b.manifests;
+    if (current.propertyId !== prior.propertyId || Number(current.reportingPeriod) !== Number(prior.reportingPeriod) + 1 || current.schemaVersion !== prior.schemaVersion) return reject('Incomparable source periods or properties');
+  }
+  const expected = expectedPublicInputs(b.predicateId, b.manifests, b.answer);
+  if (!Array.isArray(b.publicInputs) || b.publicInputs.length !== expected.length || !b.publicInputs.every((x, i) => x === expected[i])) return reject('Public inputs do not match signed sources and statement');
+  // The canonical round trip rejects any non-base64 or padded variant; the exact length bounds size.
+  const proofBytes = typeof b.proof === 'string' ? Buffer.from(b.proof, 'base64') : undefined;
+  if (!proofBytes || proofBytes.length !== 2144 || proofBytes.toString('base64') !== b.proof) return reject('Malformed or missing cryptographic proof');
+  let trust;
+  try { trust = trustedCircuit(b.predicateId); } catch { return { verified: false, status: 'service_unavailable', reason: 'Pinned circuit trust is unavailable.' }; }
+  if (b.circuitId !== `${b.predicateId}:${trust.artifactHash}` || b.verificationKeyHash !== trust.verificationKeyHash) return reject('Untrusted circuit or verification key');
+  try {
+    const result = await runProofWorker({ operation: 'verify', id: b.predicateId, proof: b.proof, publicInputs: b.publicInputs });
+    if (result.verified !== true) return reject('Cryptographic proof rejected');
+    return { verified: true, status: b.answer ? 'verified_yes' : 'verified_no', reason: 'Source signatures, approved statement, public inputs, and ZK proof verified.' };
+  } catch {
+    return { verified: false, status: 'service_unavailable', reason: 'Proof verifier unavailable or proof could not be processed. No answer accepted.' };
+  }
 }

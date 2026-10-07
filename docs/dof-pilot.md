@@ -8,7 +8,7 @@ Proposal, October 7, 2026. This is an evaluation workflow, not a claim of produc
 
 DOF can inspect, modify, and run the Apache-2.0 source in an environment it controls. A first trial should use about 100 synthetic filings with known expected outcomes. A subsequent trial could use about 100 authorized RPIE samples inside DOF after review of source access and derived disclosures. No real sample should be uploaded to GitHub, the public project site, or a maintainer's machine.
 
-The public deployment is a project overview. The current local application validates the bundled synthetic records and issues signed simulator receipts. It has no file-upload or bulk-import workflow, no production identity separation, and no genuine ZK proof generation. It deliberately withholds answers and exports when proof generation is unavailable. A receipt alone is not proof of an answer.
+The public deployment is a project overview. The current local application validates the bundled synthetic records and issues signed simulator receipts. It generates genuine UltraPlonk proofs for Q001 and Q002 and exports public bundles that verify without the source records. It has no file-upload or bulk-import workflow and no production identity separation. It releases no answer when proving or verification fails. A receipt alone is not proof of an answer.
 
 ## Make the first visit simple
 
@@ -20,8 +20,8 @@ The proposed entry screen has three steps: **Load a sample → Ask a question �
 | Import | Load a batch in the DOF view | Accepted/rejected totals and row-specific validation reasons | Proposed bulk importer and sample generator |
 | Register | Confirm validated sources | Period, source revision, and source receipt | Existing per-fixture registration; batch handling and persistence needed |
 | Ask | Choose a source and fixed Q001 | The exact approved question; no arbitrary threshold field | Existing question path; role authorization needed |
-| Prove | Request an answer | Pending state, then a verified YES/NO only after successful proof checking | Genuine proving and verification required |
-| Check | Open the public bundle on a separate verifier | Answer, question/version, permitted source metadata, and individual check results | CLI boundary exists but currently fails closed |
+| Prove | Request an answer | Pending state, then a verified YES/NO only after successful proof checking | Existing for Q001/Q002 on synthetic records; batch proving needed |
+| Check | Open the public bundle on a separate verifier | Answer, question/version, permitted source metadata, and individual check results | Existing standalone CLI verifier with operator-supplied issuer key |
 | Compare | Compare with DOF's internal reference calculation | Agreement, failures, timings, and disclosure audit | Proposed evaluation report |
 
 Use the README quick start today. It installs dependencies from the network; “local runtime” does not mean an air-gapped installation. An offline package would need reviewed, pinned dependencies and prover artifacts. Do not substitute real data into the shared simulation and call it a protected deployment.
@@ -66,7 +66,7 @@ This is the target architecture. Authentication, a separate recipient service, p
 
 Start with a dropdown and the exact Q001 wording: “Does this filing report at least 20 rent-regulated residential units?” A later natural-language interface may map a request to a versioned, approved predicate and ask the reviewer to confirm that interpretation. It must refuse unsupported questions and must not send raw filings to a language model. Free-form chat cannot manufacture a proof for an unimplemented question.
 
-A YES means the committed filing reports at least 20 such units. It does not establish legal regulation status or the truth of the owner's declaration. The signed manifest establishes issuer provenance; the genuine ZK proof would establish the computation on the committed projection. Trusted normalization links that projection to the source outside the circuit.
+A YES means the committed filing reports at least 20 such units. It does not establish legal regulation status or the truth of the owner's declaration. The signed manifest establishes issuer provenance; the genuine ZK proof establishes the computation on the committed projection. Trusted normalization links that projection to the source outside the circuit.
 
 ## Acceptance checklist
 
@@ -85,7 +85,7 @@ The reviewer handoff should include a pinned source release, reproducible synthe
 
 ## Suggested build order
 
-1. Finish genuine Q001 proofs and independent verification, following the MVP gates.
+1. Done in v0.2.0-alpha.1: genuine Q001/Q002 proofs and independent verification (see [MVP validation](mvp-validation.md)).
 2. Add the reproducible 100-record synthetic sample, validated batch importer, and comparison report.
 3. Separate custodian and recipient access, implement private persistence and policy/audit controls, and package a repeatable local evaluation.
 4. Have DOF review the adapter, environment, authorized recipients/questions, and derived disclosures before any real-sample trial.

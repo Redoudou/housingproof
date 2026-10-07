@@ -1,25 +1,27 @@
-import { generateKeyPairSync } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 import { verifyAnswerBundle } from './bundle.js';
-import { APPROVED_QUESTION, createSalt, generateManifest, syntheticFilings, type Filing } from './filings.js';
-
-const pair = generateKeyPairSync('rsa', { modulusLength: 2048 });
-const privateKeyPem = pair.privateKey.export({ type: 'pkcs8', format: 'pem' }).toString();
-const publicKeyPem = pair.publicKey.export({ type: 'spki', format: 'pem' }).toString();
-const manifest = generateManifest(syntheticFilings[1] as Filing, createSalt(), privateKeyPem);
-const bundle = { version: 'housingproof-bundle-2', predicateId: 'Q001', predicateVersion: 1, question: APPROVED_QUESTION,
-  threshold: 20, answer: true, sourceId: manifest.sourceId, propertyId: manifest.propertyId,
-  reportingPeriod: manifest.reportingPeriod, schemaVersion: manifest.schemaVersion, sourceRevision: manifest.sourceRevision,
-  commitment: manifest.commitment, manifest, publicInputs: { commitment: manifest.commitment, threshold: 20, answer: true }, proof: 'placeholder' };
-
-describe('independent verification fails closed', () => {
-  it('never treats a valid signature and arbitrary proof text as a verified answer', async () => {
-    expect(await verifyAnswerBundle(bundle, publicKeyPem)).toMatchObject({ verified: false, status: 'service_unavailable' });
+import { syntheticFilings } from './dataset.js';
+import { createSalt, generateIssuerKeys, generateManifest, type Filing } from './filings.js';
+import { POLICIES } from './policy.js';
+import { expectedPublicInputs } from './commitment.js';
+import { trustedCircuit } from './zk-runtime.js';
+const { privateKeyPem: privateKey, publicKeyPem: publicKey } = generateIssuerKeys();
+const manifest = generateManifest(syntheticFilings[1] as Filing, createSalt(), privateKey);
+const trust = trustedCircuit('Q001');
+const bundle = { version: 'housingproof-bundle-3', predicateId: 'Q001', predicateVersion: 1, question: POLICIES.Q001.question,
+  threshold: 20, answer: true, manifests: [manifest], circuitId: `Q001:${trust.artifactHash}`, verificationKeyHash: trust.verificationKeyHash,
+  publicInputs: expectedPublicInputs('Q001', [manifest], true), proof: 'placeholder' };
+describe('bundle validation before cryptographic verification', () => {
+  it('rejects signature-only and placeholder-proof bundles', async () => {
+    for (const proof of ['placeholder', '', undefined]) expect(await verifyAnswerBundle({ ...bundle, proof }, publicKey)).toMatchObject({ verified: false, status: 'rejected' });
   });
-  it('rejects a signature-only bundle', async () => {
-    expect(await verifyAnswerBundle({ ...bundle, proof: undefined }, publicKeyPem)).toMatchObject({ verified: false, status: 'rejected' });
+  it.each([{ threshold: 19 }, { question: 'Different question' }, { answer: false }, { predicateId: 'Q003' }, { version: 'housingproof-bundle-2' }, { publicInputs: [] }])('rejects statement tampering: %j', async change => {
+    expect(await verifyAnswerBundle({ ...bundle, ...change }, publicKey)).toMatchObject({ verified: false, status: 'rejected' });
   });
-  it.each([{ threshold: 19 }, { question: 'Different question' }, { answer: false }, { sourceRevision: 2 }, { commitment: 'a'.repeat(64) }, { reportingPeriod: '2024' }])('rejects statement tampering: %j', async (change) => {
-    expect(await verifyAnswerBundle({ ...bundle, ...change }, publicKeyPem)).toMatchObject({ verified: false, status: 'rejected' });
+  it.each([{ sourceRevision: 2 }, { commitment: 'a'.repeat(64) }, { reportingPeriod: '2024' }])('rejects source tampering: %j', async change => {
+    expect(await verifyAnswerBundle({ ...bundle, manifests: [{ ...manifest, ...change }] }, publicKey)).toMatchObject({ verified: false, status: 'rejected' });
+  });
+  it('rejects an injected trust anchor or private material', async () => {
+    expect(await verifyAnswerBundle({ ...bundle, issuerPublicKey: publicKey }, publicKey)).toMatchObject({ verified: false, status: 'rejected' });
   });
 });

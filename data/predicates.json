@@ -1,6 +1,6 @@
 {
   "catalog_version": "rpie-demo-catalog-v1",
-  "status": "draft-specification-not-implemented",
+  "status": "implemented-synthetic-mvp",
   "predicates": [
     {
       "id": "Q001",

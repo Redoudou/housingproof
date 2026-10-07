@@ -2,12 +2,10 @@ import { createHash, createPrivateKey, createPublicKey, generateKeyPairSync, ran
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-export const APPROVED_QUESTION = 'Does this filing report at least 20 rent-regulated residential units?';
-export const APPROVED_THRESHOLD = 20;
-export const PREDICATE_ID = 'Q001';
-export const SCHEMA_VERSION = 'rpie-demo-v1';
-export const COMMITMENT_ENCODING = 'housingproof-canonical-json-sha256-v1';
-export const EXPENSE_KEYS = ['fuel', 'light_and_power', 'cleaning_contracts', 'wages_and_payroll', 'repairs_and_maintenance', 'management_and_administration', 'insurance', 'water_and_sewer', 'advertising', 'interior_painting_and_decorating', 'amortized_leasing_costs', 'amortized_tenant_improvement_costs', 'miscellaneous'] as const;
+import { POLICIES, SCHEMA_VERSION, COMMITMENT_ENCODING, EXPENSE_KEYS, EXCLUDED_KEYS, approvedPolicy } from './policy.js';
+import { computeSaltedCommitment } from './commitment.js';
+export { APPROVED_QUESTION, APPROVED_THRESHOLD, PREDICATE_ID, SCHEMA_VERSION, COMMITMENT_ENCODING, EXPENSE_KEYS } from './policy.js';
+export { computeSaltedCommitment } from './commitment.js';
 export type Filing = {
   schema_version: typeof SCHEMA_VERSION;
   synthetic: true;
@@ -18,7 +16,7 @@ export type Filing = {
   scope: { projection: 'residential-only-main-statement-v1'; other_income_categories_present: false; replacement_reserve_activity_present: false; rent_roll_included: false };
   income: { regulated_units_reported: number; unregulated_units_reported: number; regulated_rental_income_cents: number; unregulated_rental_income_cents: number; other_service_income_cents: number };
   operating_expenses_cents: Record<typeof EXPENSE_KEYS[number], number>;
-  excluded_expenses_cents: { real_estate_taxes: number; bad_debt: number; depreciation: number; mortgage_interest: number };
+  excluded_expenses_cents: Record<typeof EXCLUDED_KEYS[number], number>;
 };
 export type Manifest = {
   issuer: 'NYC-DOF-simulated'; sourceId: string; propertyId: string; reportingPeriod: string;
@@ -26,8 +24,7 @@ export type Manifest = {
   commitment: string; rawDigest: string; issuedOn: string; signature: string;
 };
 export type ValidationResult = { valid: boolean; errors: string[] };
-export const syntheticFilings: unknown[] = JSON.parse(readFileSync(join(process.cwd(), 'data', 'filings.json'), 'utf8'));
-const filingSchema = JSON.parse(readFileSync(join(process.cwd(), 'data', 'schema.json'), 'utf8'));
+let filingSchema: Schema | undefined;
 type Schema = { type?: string; const?: unknown; enum?: unknown[]; minimum?: number; maximum?: number; pattern?: string; format?: string; required?: string[]; properties?: Record<string, Schema>; additionalProperties?: boolean };
 
 export function canonicalizeFiling(value: unknown): string {
@@ -57,7 +54,8 @@ function checkSchema(value: unknown, schema: Schema, path: string, errors: strin
 
 export function validateFiling(value: unknown): ValidationResult {
   const errors: string[] = [];
-  checkSchema(value, filingSchema, '$', errors);
+  filingSchema ??= JSON.parse(readFileSync(new URL('../data/schema.json', import.meta.url), 'utf8'));
+  checkSchema(value, filingSchema!, '$', errors);
   if (!errors.length) {
     const filing = value as Filing;
     const { year, start, end } = filing.reporting_period;
@@ -68,26 +66,20 @@ export function validateFiling(value: unknown): ValidationResult {
   return { valid: !errors.length, errors };
 }
 
-export function isApprovedQuestion(question: unknown): boolean {
-  return typeof question === 'string' && question.replace(/\s+/g, ' ').trim() === APPROVED_QUESTION;
-}
-
 export function createSalt(): string { return randomBytes(32).toString('hex'); }
-export function computeSaltedCommitment(filing: Filing, salt: string): string {
-  if (!/^[a-f0-9]{64}$/.test(salt)) throw new Error('Commitment requires a private 32-byte salt');
-  return createHash('sha256').update(`${COMMITMENT_ENCODING}\n`).update(canonicalizeFiling(filing)).update(Buffer.from(salt, 'hex')).digest('hex');
-}
 export function getKeyDirectory(): string {
   const dir = join(process.cwd(), 'server', 'keys'); mkdirSync(dir, { recursive: true, mode: 0o700 }); return dir;
+}
+export function generateIssuerKeys(): { privateKeyPem: string; publicKeyPem: string } {
+  const { privateKey, publicKey } = generateKeyPairSync('rsa', { modulusLength: 2048 });
+  return { privateKeyPem: privateKey.export({ type: 'pkcs8', format: 'pem' }).toString(), publicKeyPem: publicKey.export({ type: 'spki', format: 'pem' }).toString() };
 }
 export function ensureIssuerKeys(): { privateKeyPem: string; publicKeyPem: string } {
   const dir = getKeyDirectory();
   const privatePath = join(dir, 'issuer-private.pem'), publicPath = join(dir, 'issuer-public.pem');
   if (existsSync(privatePath) !== existsSync(publicPath)) throw new Error('Incomplete issuer key pair; do not silently rotate keys');
   if (existsSync(privatePath)) return { privateKeyPem: readFileSync(privatePath, 'utf8'), publicKeyPem: readFileSync(publicPath, 'utf8') };
-  const { privateKey, publicKey } = generateKeyPairSync('rsa', { modulusLength: 2048 });
-  const privateKeyPem = privateKey.export({ type: 'pkcs8', format: 'pem' }).toString();
-  const publicKeyPem = publicKey.export({ type: 'spki', format: 'pem' }).toString();
+  const { privateKeyPem, publicKeyPem } = generateIssuerKeys();
   writeFileSync(privatePath, privateKeyPem, { mode: 0o600 }); writeFileSync(publicPath, publicKeyPem, { mode: 0o644 });
   return { privateKeyPem, publicKeyPem };
 }
@@ -101,17 +93,23 @@ export function generateManifest(filing: Filing, salt: string, privateKeyPem: st
     rawDigest: createHash('sha256').update('housingproof:source-record:v1\n').update(Buffer.from(salt, 'hex')).update(JSON.stringify(filing)).digest('hex'), issuedOn: new Date().toISOString() };
   return { ...payload, signature: sign('RSA-SHA256', Buffer.from(canonicalizeFiling(payload)), createPrivateKey(privateKeyPem)).toString('base64') };
 }
+const MANIFEST_KEYS = ['issuer', 'sourceId', 'propertyId', 'reportingPeriod', 'schemaVersion', 'sourceRevision', 'commitmentEncoding', 'commitment', 'rawDigest', 'issuedOn', 'signature'].sort().join(',');
 export function verifyManifestSignature(manifest: Manifest, publicKeyPem: string): boolean {
   try {
+    if (!manifest || Object.keys(manifest).sort().join(',') !== MANIFEST_KEYS
+      || typeof manifest.sourceId !== 'string' || !/^DEMO-RPIE-[A-Z0-9-]+$/.test(manifest.sourceId)
+      || typeof manifest.propertyId !== 'string' || !/^DEMO-RPIE-[A-Z0-9-]+$/.test(manifest.propertyId)
+      || !['2024', '2025'].includes(manifest.reportingPeriod) || !Number.isInteger(manifest.sourceRevision) || manifest.sourceRevision < 1 || manifest.sourceRevision > 1000000
+      || typeof manifest.issuedOn !== 'string' || !Number.isFinite(Date.parse(manifest.issuedOn)) || typeof manifest.signature !== 'string') return false;
     if (manifest.issuer !== 'NYC-DOF-simulated' || manifest.schemaVersion !== SCHEMA_VERSION || manifest.commitmentEncoding !== COMMITMENT_ENCODING
-      || !/^[a-f0-9]{64}$/.test(manifest.commitment) || !/^[a-f0-9]{64}$/.test(manifest.rawDigest) || 'salt' in manifest) return false;
+      || !/^[a-f0-9]{64}$/.test(manifest.commitment) || !/^[a-f0-9]{64}$/.test(manifest.rawDigest)) return false;
     const { signature, ...payload } = manifest;
     return verify('RSA-SHA256', Buffer.from(canonicalizeFiling(payload)), createPublicKey(publicKeyPem), Buffer.from(signature, 'base64'));
   } catch { return false; }
 }
-export function evaluateThreshold(value: unknown, question: unknown, threshold: unknown = APPROVED_THRESHOLD) {
-  if (!isApprovedQuestion(question) || threshold !== APPROVED_THRESHOLD) return { status: 'denied' as const, answer: null, message: 'Only Q001 with threshold 20 is approved.' };
+export function evaluateThreshold(value: unknown, question: unknown, threshold: unknown = POLICIES.Q001.threshold) {
+  if (approvedPolicy(question, threshold)?.id !== 'Q001') return { status: 'denied' as const, answer: null, message: 'Only Q001 with threshold 20 is approved.' };
   if (!validateFiling(value).valid) return { status: 'missing_data' as const, answer: null, message: 'The filing is incomplete or invalid.' };
-  const answer = (value as Filing).income.regulated_units_reported >= APPROVED_THRESHOLD;
+  const answer = (value as Filing).income.regulated_units_reported >= POLICIES.Q001.threshold;
   return { status: answer ? 'computed_yes' as const : 'computed_no' as const, answer, message: 'Local arithmetic result only; not cryptographically verified.' };
 }
