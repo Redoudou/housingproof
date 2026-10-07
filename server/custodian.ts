@@ -1,15 +1,24 @@
 import cors from 'cors';
 import express from 'express';
+import rateLimit from 'express-rate-limit';
 import { ensureIssuerKeys, evaluateThreshold, exportBundle, generateManifest, loadPrivateKeyPem, loadPublicKeyPem, syntheticFilings, verifyManifestSignature, createSalt, type Manifest, type Filing, APPROVED_QUESTION, APPROVED_THRESHOLD } from '../src/filings.js';
 import { generateThresholdProof } from '../src/proof.js';
 
 const app = express();
 const PORT = Number(process.env.PORT ?? 3000);
 const registrations = new Map<string, { manifest: Manifest; salt: string }>();
+const apiLimiter = rateLimit({
+  windowMs: 60_000,
+  max: 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests. Please retry shortly.' },
+});
 
 ensureIssuerKeys();
 app.use(cors());
 app.use(express.json());
+app.use('/api/', apiLimiter);
 app.use(express.static('public'));
 
 app.get('/api/filings', (_req, res) => {

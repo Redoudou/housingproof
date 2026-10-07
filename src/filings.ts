@@ -93,7 +93,8 @@ export function validateFiling(filing: Partial<Filing>): ValidationResult {
     errors.push('regulatedResidentialUnits cannot exceed totalDwellingUnits');
   }
 
-  if (filing.unitCounts?.marketRateUnits !== null && typeof filing.unitCounts.marketRateUnits !== 'number') {
+  const marketRateUnits = filing.unitCounts?.marketRateUnits;
+  if (marketRateUnits !== null && marketRateUnits !== undefined && typeof marketRateUnits !== 'number') {
     errors.push('marketRateUnits must be a number or null');
   }
 
@@ -143,8 +144,6 @@ export function ensureIssuerKeys(): { privateKeyPem: string; publicKeyPem: strin
 
   const { privateKey, publicKey } = generateKeyPairSync('rsa', {
     modulusLength: 2048,
-    publicKeyEncoding: { type: 'spki', format: 'pem' },
-    privateKeyEncoding: { type: 'pkcs8', format: 'pem' },
   });
 
   const privatePem = privateKey.export({ type: 'pkcs8', format: 'pem' }).toString();
