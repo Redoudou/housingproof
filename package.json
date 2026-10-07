@@ -12,7 +12,10 @@
     "typecheck": "tsc --noEmit",
     "fixtures": "python3 scripts/validate-rpie-fixtures.py",
     "check": "npm run typecheck && npm run fixtures",
-    "build:site": "node scripts/build-site.mjs"
+    "build:site": "node scripts/build-site.mjs",
+    "prose:check": "node scripts/humanize.mjs",
+    "prose:fix": "node scripts/humanize.mjs --write",
+    "prose:test": "node --test scripts/humanize.node.mjs"
   },
   "dependencies": {
     "cors": "^2.8.5",

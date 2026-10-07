@@ -1,5 +1,5 @@
 name: Checks
-on: [push, pull_request]
+on: [push, pull_request, workflow_dispatch]
 permissions:
   contents: read
 jobs:
@@ -15,5 +15,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: npm ci
+      - run: npm run prose:test
+      - run: npm run prose:check
       - run: npm run check
       - run: npm test
