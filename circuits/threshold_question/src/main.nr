@@ -1,8 +1,8 @@
-// DISABLED LEGACY PLACEHOLDER: not the signed SHA-256 projection.
-// src/proof.ts refuses to use this circuit. Replace it with the reviewed
-// fixed-Q001 circuit and shared encoding before enabling any verified answer.
-fn main(regulated_units: u32, threshold: u32, salt: Field, commitment: pub Field) -> pub bool {
-    let expected = (regulated_units as Field) * 1000000000 + (threshold as Field) * 1000 + salt;
-    assert(expected == commitment);
-    regulated_units >= threshold
+use source_projection::{Source, Projection, check_source};
+fn main(source: pub Source, predicate: pub u32, version: pub u32, threshold: pub u32, answer: pub bool, values: Projection) {
+    assert(predicate == 1);
+    assert(version == 1);
+    assert(threshold == 20);
+    check_source(source, values);
+    assert(answer == (values.regulated >= 20));
 }

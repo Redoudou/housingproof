@@ -1,18 +1,18 @@
 # Housingproof: MVP build plan
 
-Updated October 7, 2026 after reviewing the standalone repository at `aee0a5d`. This is the authoritative implementation plan for Housingproof. The earlier planning package has been adapted to the existing Express service, TypeScript code, and plain browser UI.
+Updated October 7, 2026. This remains the authoritative scope and trust model. The local synthetic MVP now implements Q001 and Q002 with fresh UltraPlonk proofs, public bundle export, and independent verification. See [protocol](proof-protocol.md) and [validation evidence](mvp-validation.md).
 
 ## Current status
 
-| Area | Reviewed starter | This change | Remaining work |
-|---|---|---|---|
-| Dataset | Generic P&L categories, taxes mixed into expenses | Source-mapped subset, two years, ten synthetic records, schema and fixed catalog | Future current-template rent-roll mapping |
-| Ingestion | Partial validation; invalid records could be registered | Complete subset validation before registration; private salt, raw digest, signed projection manifest | Persistence, legal access, and key lifecycle for a real pilot |
-| Circuit | Arithmetic commitment unlike service SHA-256; no fixed-threshold binding | Legacy placeholder disabled and explicitly labeled | Shared commitment encoding and pinned compatible Noir/Barretenberg toolchain |
-| Verification | CLI accepted a signature without checking a ZK proof | Fail closed; no verified result or export without a genuine checked proof | Actual public-input binding, trusted verification key, and independent proof verification |
-| API/UI | Unverified Boolean labeled verified; shared request artifacts | Clear unavailable state, no answer released on proving failure, registered sources only | Working proof flow and independent agency verification UX |
+| Area | Implemented | Pilot work outside this MVP |
+|---|---|---|
+| Dataset | Source-mapped subset, two years, synthetic boundary and stress cases | Reviewed original-form ingestion |
+| Ingestion | Validation, private salt, signed fixed-order source commitment | Persistence and key lifecycle |
+| Circuits | Q001 / Q002, shared Poseidon2 field encoding, bounds and fixed catalog parameters | Independent security audit |
+| Verification | Real proof bytes, public-input binding, pinned circuit/VK, separate issuer trust anchor | Operational trust distribution and revocation |
+| API/UI | Register → approve → prove → verify → export; changed-answer rejection; disclosure log | Authentication and separate deployments |
 
-No successful ZK proof is demonstrated by this change. The inspected starter has structural blockers before any CRS diagnosis is justified. Its milestones are not complete. Q001 is the next implementation priority; Q002 has a dataset and specification only.
+Both YES and NO are proven. Invalid, unavailable, denied and rejected states release no answer or bundle. All records and issuance are synthetic.
 
 ## The demonstration
 
@@ -83,20 +83,20 @@ Retain the current small Express/TypeScript application and plain browser UI. `s
 Implementation paths already present:
 
 - `src/filings.ts`: subset validation, canonical projection, signed simulator manifests, local arithmetic oracle.
-- `src/proof.ts`: proof integration boundary; unavailable until the audited Q001 circuit/toolchain is ready.
-- `src/bundle.ts`: statement checks and fail-closed verification boundary.
+- `src/proof.ts`: live Q001 / Q002 proof orchestration and precondition checks.
+- `src/bundle.ts`: source signatures, exact public-input binding, and independent proof verification.
 - `server/custodian.ts`: local load/register/query API.
-- `circuits/threshold_question/`: disabled legacy circuit placeholder; replace before enabling proofs.
-- `scripts/verify-bundle.ts`: independently supplied public-key verification command; fails closed until ZK verification is implemented.
+- `circuits/threshold_question/`, `circuits/balance_decline/`, `circuits/source_projection/`: fixed catalog circuits and shared commitment encoding.
+- `scripts/verify-bundle.ts`: standalone verification using an independently supplied public issuer key and pinned local circuit/VK fingerprints.
 - `public/`: simulated custodian and agency views. English is sufficient for the first milestone.
 
-Candidate stack: Noir + Barretenberg, matching their [documented prover/verifier workflow](https://noir-lang.org/docs/getting_started/quick_start). Pin a mutually compatible compiler, backend, commitment implementation, proof format, and verification-key set after the technical spike. Do not assume “latest” components are compatible. The starter does not pin a proven compatible toolchain. Compile and verify before claiming readiness; a compiled circuit alone does not establish a working proof.
+Implemented stack: Noir compiler and NoirJS **1.0.0-beta.3**, Barretenberg **0.82.2**, **UltraPlonk**. The initial UltraHonk spike was replaced because its default mode is not the ZK variant. `npm run zk:build` compiles locally and checks deterministic artifact and VK hashes against `circuits/trust.json`; ordinary setup cannot silently replace trust anchors. Genuine proof tests establish compatibility for this exact combination.
 
 At ingestion, the simulated issuer validates the subset and produces a signed manifest binding property, period, source revision, schema version, salted serialized-record digest, and a salted commitment to the canonical circuit projection. The issuer private key remains in the custodian service. The verifier pins its demo public key; it must not accept a key supplied by the prover as its trust anchor.
 
 The salted serialized-record digest is an audit reference, not a digest of an unparsed original filing. The ZK circuit proves facts about the normalized projection. The issuer's normalization and its link to the original filing are trusted outside the circuit. Do not claim the circuit parses or proves the fidelity of a complete original form. Source revision changes require a fresh commitment and signed manifest; never silently reuse the old identity. Fresh private randomness protects commitments against guessing small-domain hidden values. Stable commitments still link answers about the same source.
 
-Freeze an explicit, versioned field order and integer encoding before proving. The commitment includes a domain tag, schema, property identity, year/period, source revision, counts, all included income/expense components, and private salt. Strings become unambiguously encoded identifiers; do not hash loosely ordered JSON and claim it matches a circuit commitment. Use a documented circuit-supported hash, with shared host/circuit test vectors. Put bounds on every count and amount; range-check before sums, signed subtraction, and products. The proposed amount cap is 10^12 cents per line and count cap is 10,000. This subset's totals and basis-point products fit in signed 128-bit arithmetic; enforce that in the implementation, not just the schema.
+Freeze an explicit, versioned field order and integer encoding before proving. The commitment includes a domain tag, schema, property identity, year/period, source revision, counts, all included income/expense components, and private salt. Strings become unambiguously encoded identifiers; do not hash loosely ordered JSON and claim it matches a circuit commitment. Use a documented circuit-supported hash, with shared host/circuit test vectors. Put bounds on every count and amount; range-check before sums, signed subtraction, and products. The proposed amount cap is 10^12 cents per line and count cap is 10,000. The implemented circuits use signed 64-bit arithmetic: each balance is between −13×10^12 and 3×10^12 cents, and the largest scaled difference is 1.6×10^17, below 2^63−1. Counts and amount ranges are constrained before sums and products. This replaces the earlier proposed 128-bit representation; Noir beta.3 supports the sufficient 64-bit signed type.
 
 Private inputs: canonical projection(s) and salt(s). Public inputs: commitment(s), predicate and circuit versions, approved threshold, property/period/revision binding, and Boolean result. The circuit enforces `result == computed_predicate`, allowing genuine proofs of both YES and NO. It must recompute commitment(s) from the witness and constrain any cross-year consistency checks it claims to prove.
 
@@ -113,9 +113,9 @@ An exported answer bundle contains the public statement, signed manifest(s), pro
 | 4. Two-screen demo | Custodian simulation and separate agency query/verify experience | English; success, unavailable, denied, rejected, and service-failure states; recording-ready click path |
 | 5. City review package | Reproducible demo and architecture handoff | Another machine verifies an exported bundle without source files or issuer private key; explicit list of integration, legal, and operational decisions for a real sample |
 
-First build Q001 with real cryptography and verify the exported bundle independently. If its cost or compatible tooling is unacceptable, revisit the stack before investing in interface work. Do not put a “Verified” badge on an ordinary Boolean calculation. Cached proof replay, if later offered in a static recording mode, must be labeled replay rather than live proof generation.
+Current evidence covers milestones 0–4 for the local synthetic demo: genuine YES/NO proofs for both predicates, private witness and public statement constraints, fail-closed service states, export/import and changed-answer rejection, plus isolated CLI verification without dataset or private-key files. The [validation report](mvp-validation.md) records actual measurements. Milestone 5 remains the City review and authorization handoff, not a claim of deployment readiness.
 
-The current validator checks fixture contracts and arithmetic only. Run `python3 scripts/validate-rpie-fixtures.py`. It does not implement cryptography or substitute for circuit tests. Run `npm run check` and `npm test` for this repository. Run real circuit/proof and browser checks when those capabilities are added. CI repeats the TypeScript, fixture, and unit checks. The maintainer reviews and merges changes.
+Run `npm run check`, `npm test`, `npm run zk:build`, and `npm run test:zk`. `npm run test:browser` exercises the real click path after `npx playwright install chromium`. CI repeats these checks. The maintainer reviews and merges changes.
 
 ## Limits the story must preserve
 

@@ -1,14 +1,12 @@
-import { generateKeyPairSync } from 'node:crypto';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import type { Server } from 'node:http';
 import { createApp } from './custodian.js';
-import { APPROVED_QUESTION } from '../src/filings.js';
+import { APPROVED_QUESTION, generateIssuerKeys } from '../src/filings.js';
 
 let server: Server, base: string;
-const keyPair = generateKeyPairSync('rsa', { modulusLength: 2048 });
-const keys = { privateKeyPem: keyPair.privateKey.export({ type: 'pkcs8', format: 'pem' }).toString(), publicKeyPem: keyPair.publicKey.export({ type: 'spki', format: 'pem' }).toString() };
+const keys = generateIssuerKeys();
 beforeEach(async () => {
-  server = createApp({ keys }).listen(0, '127.0.0.1');
+  server = createApp({ keys, prove: async () => ({ status: 'service_unavailable', message: 'Proof toolchain unavailable for this failure-path test.' }) }).listen(0, '127.0.0.1');
   await new Promise<void>((resolve) => server.once('listening', resolve));
   const address = server.address();
   if (!address || typeof address === 'string') throw new Error('No local test port');

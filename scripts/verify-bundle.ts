@@ -10,7 +10,7 @@ if (!bundlePath || !publicKeyPath) {
   try {
     const result = await verifyAnswerBundle(JSON.parse(readFileSync(bundlePath, 'utf8')), readFileSync(publicKeyPath, 'utf8'));
     console.log(JSON.stringify(result, null, 2));
-    process.exitCode = 1; // Fail closed while proof verification is unavailable.
+    process.exitCode = result.verified ? 0 : 1;
   } catch {
     console.error('Verification failed: unreadable or malformed bundle/trusted key.');
     process.exitCode = 1;

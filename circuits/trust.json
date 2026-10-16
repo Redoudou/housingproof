@@ -1,0 +1,15 @@
+{
+  "compiler": "1.0.0-beta.3",
+  "backend": "0.82.2",
+  "scheme": "ultraplonk",
+  "circuits": {
+    "Q001": {
+      "artifactHash": "f89a8b1cd0b6c5b44c4895711a4a0a5d9f785a9f41ca08956ccccb7c798da737",
+      "verificationKeyHash": "f60460378d13fa75f04cfd325697e910648bfe28ce646cd2dd26f497a508fe20"
+    },
+    "Q002": {
+      "artifactHash": "42f0409a45908151975ae9d2d723564fb02d127ee1d2c2edc638c168e365bc69",
+      "verificationKeyHash": "2123e3a1aff3bc43235c2595d43bf533eba263f4eb0ebc40ff169f09d8b4c9e9"
+    }
+  }
+}

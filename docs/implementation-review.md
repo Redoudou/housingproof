@@ -1,6 +1,6 @@
-# Starter review and implementation priorities
+# Implementation status and starter review
 
-Reviewed October 7, 2026 at `aee0a5d`, after the initial Copilot PR merged. The [MVP plan](mvp-plan.md) adapts the earlier planning package to this standalone repository.
+Historical starter review, October 7, 2026 at `aee0a5d`, after the initial Copilot PR merged. The [MVP plan](mvp-plan.md) adapts the earlier planning package to this standalone repository.
 
 | Starter gap | Why it matters | Resolution / next work |
 |---|---|---|
@@ -15,7 +15,7 @@ Reviewed October 7, 2026 at `aee0a5d`, after the initial Copilot PR merged. The 
 | Failure still returned “valid_yes”/“Verified” text | UI could imply proof success despite failure | No Boolean or bundle on unavailable proof; explicit unavailable state |
 | ESM executable lookup, witness formatting, shared files, and guessed backend options | Toolchain failures were incorrectly attributed only to CRS | Unsafe path removed from runtime. Pin and test toolchain before diagnosing CRS or enabling proofs |
 
-## First implementation PR after this alignment
+## Implementation completed after this review
 
 1. Select and pin a compatible Noir compiler, Barretenberg backend, circuit hash, and proof format.
 2. Define a fixed ordered encoding for the complete signed projection and private salt. If it replaces the current host JSON encoding, version the receipt and commitment scheme together.
@@ -25,4 +25,6 @@ Reviewed October 7, 2026 at `aee0a5d`, after the initial Copilot PR merged. The 
 6. Exercise YES/NO, exact threshold, altered answer, wrong source/period, arbitrary VK, and signature-only attacks. Record machine details, proof time/size, and independent verification time.
 7. Enable verified answer display/export only after those checks pass. Report unavailable tools, denied queries, invalid sources, and rejected proofs separately.
 
-Q002 comes afterward. Cohort answers, public-data joins, authentication, real DOF ingestion, and disclosure authority remain separate work. Do not expand scope to work around missing proof verification.
+Q002 is implemented alongside Q001. Cohort answers, public-data joins, authentication, real DOF ingestion, and disclosure authority remain separate work. Do not expand scope to work around missing proof verification.
+
+The local MVP now resolves items 1–7 for both Q001 and Q002. See [proof protocol](proof-protocol.md) and [validation evidence](mvp-validation.md). The table above documents the original defects, not current blockers. UltraPlonk is the selected hiding backend; the default UltraHonk mode from the spike is not distributed. Production authorization, source fidelity, key lifecycle and independent audit remain outside the demo.
