@@ -19,7 +19,9 @@ The package version and its matching `docs/releases/vVERSION.md` define the rele
 
 After this change lands on `main`, `.github/workflows/release.yml` runs the repository checks and publishes `v0.2.0-alpha.1` as a GitHub prerelease. It targets the triggering commit and leaves an existing release unchanged. Future stable releases need an explicit workflow decision; this workflow accepts alpha versions only.
 
-The release accurately describes a synthetic foundation with no working ZK proof yet. GitHub creates source archives for the tag; those are source distributions, not compiled application installers.
+The `v0.2.0-alpha.1` release describes the working synthetic proof MVP from [PR #5](https://github.com/Redoudou/housingproof/pull/5). The earlier `v0.1.0-alpha.1` foundation release had no working proofs. GitHub creates source archives for each tag; those are source distributions, not compiled application installers.
+
+For what you can see and test after merge, follow [the MVP test guide](try-the-mvp.md). Merging does not deploy the live Node prover publicly. Check Actions for successful Pages deployment and prerelease publication; neither is guaranteed solely by merging.
 
 ## Repository About settings
 

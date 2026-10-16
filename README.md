@@ -39,6 +39,10 @@ The potential outcome: better evidence for housing decisions, with controlled di
 
 The linked project site presents the concept and current status. It is **not a hosted prover**. Its deployment is managed by the [Pages workflow](.github/workflows/pages.yml); the project overview is deployed at [helloredwan.me/housingproof](https://helloredwan.me/housingproof/).
 
+## What PR #5 lets you test
+
+[PR #5](https://github.com/Redoudou/housingproof/pull/5) adds the working local proof demo: verified YES/NO answers for both questions, public bundle export/import, and rejection of a changed answer. [Follow the step-by-step test guide](docs/try-the-mvp.md), including the exact fictional sources and expected results. The public walkthrough is scripted; live proving runs locally after setup.
+
 ## Quick start
 
 Requires **Node.js 22+** and **Python 3**.
